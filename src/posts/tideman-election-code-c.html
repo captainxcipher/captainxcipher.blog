@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tideman Election Code in C (CS50 Project) | Captain X Cipher</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <style>
+    .blog-container {
+      max-width: 800px;
+      margin: 2.5rem auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px rgba(35,41,70,0.07);
+      padding: 2.5rem 2rem;
+    }
+    .blog-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #181c32;
+      margin-bottom: 0.5rem;
+    }
+    .blog-meta {
+      color: #888;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+    .blog-section {
+      margin-bottom: 2.2rem;
+    }
+    .blog-section h2 {
+      color: #e06a86;
+      font-size: 1.3rem;
+      margin-bottom: 0.7rem;
+      font-weight: 700;
+    }
+    .blog-section p {
+      color: #232946;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    pre, code {
+      background: #f7f8fa;
+      color: #181c32;
+      font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 1rem;
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin-bottom: 1.2rem;
+      border: 1px solid #eaeaea;
+      display: block;
+    }
+    .blog-section code {
+      padding: 0.2rem 0.4rem;
+      font-size: 0.98rem;
+      border-radius: 5px;
+      background: #f0f0f5;
+      color: #e06a86;
+    }
+    .blog-section ul {
+      margin-bottom: 1rem;
+      padding-left: 1.2rem;
+    }
+    .blog-section li {
+      margin-bottom: 0.5rem;
+    }
+    .blog-social {
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .blog-social a {
+      color: #eebbc3;
+      font-size: 1.4rem;
+      margin-right: 1.2rem;
+      transition: color 0.2s;
+    }
+    .blog-social a:hover {
+      color: #232946;
+    }
+    @media (max-width: 600px) {
+      .blog-container { padding: 1.2rem 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header flex-header">
+    <div class="site-brand">
+      <span>Captain X Cipher</span>
+    </div>
+    <nav class="main-nav">
+      <a href="../index.html">Home</a>
+      <a href="../blogs.html" class="active">Blogs</a>
+      <a href="../about.html">About</a>
+      <a href="../contact.html">Contact Us</a>
+      <a href="../privacy.html">Privacy Policy</a>
+    </nav>
+  </header>
+  <main>
+    <div class="blog-container">
+      <div class="blog-title">Tideman Election Code in C<br><span style="font-size:1.1rem;font-weight:400;color:#e06a86;">CS50 Project #3</span></div>
+      <div class="blog-meta">By Bharat Menariaa &nbsp;|&nbsp; April 25, 2025</div>
+
+      <div class="blog-section">
+        <h2>Introduction</h2>
+        <p>
+          The Tideman voting method (Ranked Pairs) determines the winner of an election based on ranked preferences from voters. Instead of just picking a candidate with the most votes, Tideman compares every pair of candidates head-to-head, locks in the strongest wins, and avoids cycles to ensure the winner is the most broadly preferred.
+        </p>
+      </div>
+
+      <div class="blog-section">
+        <h2>Step 1: The vote Function</h2>
+        <p>
+          This function takes the rank, candidate name, and ranks array. It stores the voter's preference and returns <code>true</code> if the candidate is found.
+        </p>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+bool vote(int rank, string name, int ranks[])
+{
+    for (int i = 0; i < candidate_count; i++)
+    {
+        if (strcmp(candidates[i],name) == 0)
+        {
+            ranks[rank] = i;
+            return true;
+        }
+    }
+    return false;
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 2: Recording Preferences</h2>
+        <p>
+          This function updates the <code>preferences</code> 2D array to count how many voters prefer candidate <code>i</code> over <code>j</code>.
+        </p>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+// preferences[i][j] is number of voters who prefer i over j
+int preferences[MAX][MAX];
+// Update preferences given one voter's ranks
+void record_preferences(int ranks[])
+{
+    for (int i = 0 ; i < candidate_count; i++)
+    {
+        for (int j = i+1; j < candidate_count; j++)
+        {
+            preferences[ranks[i]][ranks[j]] ++;
+        }
+    }
+    return;
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 3: Adding Pairs</h2>
+        <p>
+          This function creates all possible pairs of candidates and determines the winner and loser for each pair based on preferences.
+        </p>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+// Each pair has a winner, loser
+typedef struct
+{
+    int winner;
+    int loser;
+} pair;
+// Array of candidates
+string candidates[MAX];
+pair pairs[MAX * (MAX - 1) / 2];
+// Record pairs of candidates where one is preferred over the other
+void add_pairs(void)
+{
+    for (int i= 0; i < candidate_count; i++)
+    {
+        for (int j = i+1 ; j < candidate_count; j++)
+        {
+            if (preferences[i][j] > preferences[j][i])
+            {
+                pairs[pair_count].winner = i;
+                pairs[pair_count].loser = j;
+                pair_count++;
+            }
+            else if (preferences[i][j] < preferences[j][i])
+            {
+                pairs[pair_count].winner = j;
+                pairs[pair_count].loser = i;
+                pair_count++;
+            }
+        }
+    }
+    return;
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 4: Sorting Pairs</h2>
+        <p>
+          This function sorts the pairs in decreasing order by the strength of victory using bubble sort.
+        </p>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+// Sort pairs in decreasing order by strength of victory
+void sort_pairs(void)
+{
+    int swap = 1;
+    while (swap != 0)
+    {
+        swap = 0;
+        for (int i = 0; i < pair_count - 1; i++)
+        {
+            int diff1 = preferences[pairs[i].winner][pairs[i].loser] - preferences[pairs[i].loser][pairs[i].winner];
+            int diff2 = preferences[pairs[i+1].winner][pairs[i+1].loser] - preferences[pairs[i+1].loser][pairs[i+1].winner];
+            if (diff1 < diff2)
+            {
+                pair temp = pairs[i];
+                pairs[i] = pairs[i+1];
+                pairs[i+1] = temp;
+                swap++;
+            }
+        }
+    }
+    return;
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 5: Locking Pairs Without Cycles</h2>
+        <p>
+          This function locks pairs into the candidate graph in order, without creating cycles. The helper function <code>creates_cycle</code> checks for cycles.
+        </p>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+// Lock pairs into the candidate graph in order, without creating cycles
+void lock_pairs(void)
+{
+    for (int i = 0; i < pair_count; i++)
+    {
+        int winner = pairs[i].winner;
+        int loser = pairs[i].loser;
+        if(!creates_cycle(winner,loser))
+        {
+            locked[winner][loser] = true;
+        }
+    }
+    return;
+}
+// added for check cycle creation in locking tough to find in lock pair fn so made extra function
+bool creates_cycle(int winner, int loser)
+{
+    if (locked[loser][winner] == true)
+    {
+        return true;
+    }
+    for (int i = 0; i < candidate_count; i++)
+    {
+        if (locked[i][winner]== true)
+        {
+            if(creates_cycle(i,loser))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 6: Printing the Winner</h2>
+        <p>
+          This function finds and prints the winner: the candidate who does not have any arrow pointing to them in the locked array.
+        </p>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+// Print the winner of the election
+void print_winner(void)
+{
+    for (int i = 0; i < candidate_count; i++)
+    {
+        bool i_win = true;
+        for (int j = 0; j < candidate_count; j++)
+        {
+            if (locked[j][i])
+            {
+                i_win = false;
+                break;
+            }
+        }
+        if (i_win)
+        {
+            printf("%s\n", candidates[i]);
+            return;
+        }
+    }
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Full Code</h2>
+        <p>
+          Here is the complete structure of the program, including function prototypes and the main logic:
+        </p>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+#include "cs50.h"
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+// Max number of candidates
+#define MAX 9
+// preferences[i][j] is number of voters who prefer i over j
+int preferences[MAX][MAX];
+// locked[i][j] means i is locked in over j
+bool locked[MAX][MAX];
+// Each pair has a winner, loser
+typedef struct
+{
+    int winner;
+    int loser;
+} pair;
+// Array of candidates
+string candidates[MAX];
+pair pairs[MAX * (MAX - 1) / 2];
+int pair_count;
+int candidate_count;
+// Function prototypes
+bool vote(int rank, string name, int ranks[]);
+void record_preferences(int ranks[]);
+void add_pairs(void);
+void sort_pairs(void);
+void lock_pairs(void);
+bool creates_cycle(int winner, int loser);
+void print_winner(void);
+int main(int argc, string argv[])
+{
+    // Check for invalid usage
+    if (argc < 2)
+    {
+        printf("Usage: tideman [candidate ...]\n");
+        return 1;
+    }
+    // Populate array of candidates
+    candidate_count = argc - 1;
+    if (candidate_count > MAX)
+    {
+        printf("Maximum number of candidates is %i\n", MAX);
+        return 2;
+    }
+    for (int i = 0; i < candidate_count; i++)
+    {
+        candidates[i] = argv[i + 1];
+    }
+    // Clear graph of locked in pairs
+    for (int i = 0; i < candidate_count; i++)
+    {
+        for (int j = 0; j < candidate_count; j++)
+        {
+            locked[i][j] = false;
+        }
+    }
+    pair_count = 0;
+    int voter_count = get_int("Number of voters: ");
+    // Query for votes
+    for (int i = 0; i < voter_count; i++)
+    {
+        // ranks[i] is voter's ith preference
+        int ranks[candidate_count];
+        // Query for each rank
+        for (int j = 0; j < candidate_count; j++)
+        {
+            string name = get_string("Rank %i: ", j + 1);
+            if (!vote(j, name, ranks))
+            {
+                printf("Invalid vote.\n");
+                return 3;
+            }
+        }
+        record_preferences(ranks);
+        printf("\n");
+    }
+    add_pairs();
+    sort_pairs();
+    lock_pairs();
+    print_winner();
+    return 0;
+}
+// Update ranks given a new vote
+bool vote(int rank, string name, int ranks[])
+{
+    for (int i = 0; i < candidate_count; i++)
+    {
+        if (strcmp(candidates[i],name) == 0)
+        {
+            ranks[rank] = i;
+            return true;
+        }
+    }
+    return false;
+}
+// Update preferences given one voter's ranks
+void record_preferences(int ranks[])
+{
+    for (int i = 0 ; i < candidate_count; i++)
+    {
+        for (int j = i+1; j < candidate_count; j++)
+        {
+            preferences[ranks[i]][ranks[j]] ++;
+        }
+    }
+    return;
+}
+// Record pairs of candidates where one is preferred over the other
+void add_pairs(void)
+{
+    for (int i= 0; i < candidate_count; i++)
+    {
+        for (int j = i+1 ; j < candidate_count; j++)
+        {
+            if (preferences[i][j] > preferences[j][i])
+            {
+                pairs[pair_count].winner = i;
+                pairs[pair_count].loser = j;
+                pair_count++;
+            }
+            else if (preferences[i][j] < preferences[j][i])
+            {
+                pairs[pair_count].winner = j;
+                pairs[pair_count].loser = i;
+                pair_count++;
+            }
+        }
+    }
+    return;
+}
+// Sort pairs in decreasing order by strength of victory
+void sort_pairs(void)
+{
+    int swap = 1;
+    while (swap != 0)
+    {
+        swap = 0;
+        for (int i = 0; i < pair_count - 1; i++)
+        {
+            int diff1 = preferences[pairs[i].winner][pairs[i].loser] - preferences[pairs[i].loser][pairs[i].winner];
+            int diff2 = preferences[pairs[i+1].winner][pairs[i+1].loser] - preferences[pairs[i+1].loser][pairs[i+1].winner];
+            if (diff1 < diff2)
+            {
+                pair temp = pairs[i];
+                pairs[i] = pairs[i+1];
+                pairs[i+1] = temp;
+                swap++;
+            }
+        }
+    }
+    return;
+}
+// Lock pairs into the candidate graph in order, without creating cycles
+void lock_pairs(void)
+{
+    for (int i = 0; i < pair_count; i++)
+    {
+        int winner = pairs[i].winner;
+        int loser = pairs[i].loser;
+        if(!creates_cycle(winner,loser))
+        {
+            locked[winner][loser] = true;
+        }
+    }
+    return;
+}
+// added for check cycle creation in locking tough to find in lock pair fn so made extra function
+bool creates_cycle(int winner, int loser)
+{
+    if (locked[loser][winner] == true)
+    {
+        return true;
+    }
+    for (int i = 0; i < candidate_count; i++)
+    {
+        if (locked[i][winner]== true)
+        {
+            if(creates_cycle(i,loser))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+// Print the winner of the election
+void print_winner(void)
+{
+    for (int i = 0; i < candidate_count; i++)
+    {
+        bool i_win = true;
+        for (int j = 0; j < candidate_count; j++)
+        {
+            if (locked[j][i])
+            {
+                i_win = false;
+                break;
+            }
+        }
+        if (i_win)
+        {
+            printf("%s\n", candidates[i]);
+            return;
+        }
+    }
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>More Projects</h2>
+        <p>
+          Visit my <a href="https://github.com/captainxcipher" target="_blank" style="color:#e06a86;text-decoration:underline;">GitHub page</a> and view more CS50 projects.<br>
+          <a href="../blogs.html" style="color:#e06a86;text-decoration:underline;">Back to Blogs &rarr;</a>
+        </p>
+      </div>
+
+      <div class="blog-social">
+        <a href="https://instagram.com/captainxcipher11" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.youtube.com/@captainxcipher" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="mailto:ciphercaptain@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
+    </div>
+  </footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+<script>
+function copyCode(btn) {
+  const code = btn.nextElementSibling.querySelector('code');
+  navigator.clipboard.writeText(code.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
+  });
+}
+</script>
+</body>
+</html>

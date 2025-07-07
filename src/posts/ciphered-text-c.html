@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cryptography: Ciphered Text in C (CS50 Project) | Captain X Cipher</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <style>
+    .blog-container {
+      max-width: 800px;
+      margin: 2.5rem auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px rgba(35,41,70,0.07);
+      padding: 2.5rem 2rem;
+    }
+    .blog-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #181c32;
+      margin-bottom: 0.5rem;
+    }
+    .blog-meta {
+      color: #888;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+    .blog-section {
+      margin-bottom: 2.2rem;
+    }
+    .blog-section h2 {
+      color: #e06a86;
+      font-size: 1.3rem;
+      margin-bottom: 0.7rem;
+      font-weight: 700;
+    }
+    .blog-section p {
+      color: #232946;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    pre, code {
+      background: #f7f8fa;
+      color: #181c32;
+      font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 1rem;
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin-bottom: 1.2rem;
+      border: 1px solid #eaeaea;
+      display: block;
+    }
+    .blog-section code {
+      padding: 0.2rem 0.4rem;
+      font-size: 0.98rem;
+      border-radius: 5px;
+      background: #f0f0f5;
+      color: #e06a86;
+    }
+    .blog-section ul {
+      margin-bottom: 1rem;
+      padding-left: 1.2rem;
+    }
+    .blog-section li {
+      margin-bottom: 0.5rem;
+    }
+    .blog-social {
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .blog-social a {
+      color: #eebbc3;
+      font-size: 1.4rem;
+      margin-right: 1.2rem;
+      transition: color 0.2s;
+    }
+    .blog-social a:hover {
+      color: #232946;
+    }
+    @media (max-width: 600px) {
+      .blog-container { padding: 1.2rem 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header flex-header">
+    <div class="site-brand">
+      <span>Captain X Cipher</span>
+    </div>
+    <nav class="main-nav">
+      <a href="../index.html">Home</a>
+      <a href="../blogs.html" class="active">Blogs</a>
+      <a href="../about.html">About</a>
+      <a href="../contact.html">Contact Us</a>
+      <a href="../privacy.html">Privacy Policy</a>
+    </nav>
+  </header>
+  <main>
+    <div class="blog-container">
+      <div class="blog-title">Cryptography: Ciphered Text in C<br><span style="font-size:1.1rem;font-weight:400;color:#e06a86;">CS50 Project #2</span></div>
+      <div class="blog-meta">By Bharat Menariaa &nbsp;|&nbsp; April 13, 2025</div>
+
+      <div class="blog-section">
+        <h2>Introduction</h2>
+        <p>
+          Cryptography means converting plaintext to code words (cipher) using a key. In this CS50 project, you’ll learn how to write a C program that converts plain text to ciphered text using a 26-letter alphabetical key.
+        </p>
+      </div>
+
+      <div class="blog-section">
+        <h2>Step 1: Command Line Argument for Key</h2>
+        <p>
+          We use a command line argument for the key. This code ensures the user provides a valid 26-character key containing only letters, with no repeats.
+        </p>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+int main(int argc, string argv[])
+{
+    if (argc != 2 || strlen(argv[1]) != 26)
+    {
+        printf("Usage: ./substitution key or Key must contain 26 characters\n");
+        return 1;
+    }
+    int len = strlen(argv[1]);
+    for (int i =0;i &lt; len; i++)
+    {
+        if (!isalpha(argv[1][i]))
+        {
+            printf("Key must contain only letters\n");
+            return 1;
+        }
+        for (int j = i + 1; j &lt; len; j++)
+        {
+            if (toupper(argv[1][i])== toupper(argv[1][j]))
+            {
+                printf("Letters cannot be repeat\n");
+                return 1;
+            }
+        }
+    }
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 2: Enciphering Plain Text</h2>
+        <p>
+          This function takes the key and the text, and converts the plain text to ciphered text. Each letter is substituted according to the key.
+        </p>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+string enciphertext(string text,string key)
+{
+    int len = strlen(text);
+    string ciphertext = malloc(len+1);
+    int index;
+    for (int i = 0; i &lt; len; i++)
+    {
+        if (isupper(text[i]))
+        {
+            index = text[i] - 65;
+            ciphertext[i] = toupper(key[index]);
+        }
+        else if (islower(text[i]))
+        {
+            index = text[i] - 97;
+            ciphertext[i] = tolower(key[index]);
+        }
+        else
+        {
+            ciphertext[i] = text[i];
+        }
+    }
+    ciphertext[len] = '\0';
+    return ciphertext;
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 3: Full Program</h2>
+        <p>
+          This program only converts plain text to ciphered text. Here is the complete code:
+        </p>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;ctype.h&gt;
+#include &lt;cs50.h&gt;
+string enciphertext(string text,string key);
+int main(int argc, string argv[])
+{
+    if (argc != 2 || strlen(argv[1]) != 26)
+    {
+        printf("Usage: ./substitution key or Key must contain 26 characters\n");
+        return 1;
+    }
+    int len = strlen(argv[1]);
+    for (int i =0;i &lt; len; i++)
+    {
+        if (!isalpha(argv[1][i]))
+        {
+            printf("Key must contain only letters\n");
+            return 1;
+        }
+        for (int j = i + 1; j &lt; len; j++)
+        {
+            if (toupper(argv[1][i])== toupper(argv[1][j]))
+            {
+                printf("Letters cannot be repeat\n");
+                return 1;
+            }
+        }
+    }
+    string key = argv[1];
+    string text = get_string("plaintext: ");
+    string ciphertext = enciphertext(text,key);
+    printf("ciphertext: %s\n",ciphertext);
+}
+string enciphertext(string text,string key)
+{
+    int len = strlen(text);
+    string ciphertext = malloc(len+1);
+    int index;
+    for (int i = 0; i &lt; len; i++)
+    {
+        if (isupper(text[i]))
+        {
+            index = text[i] - 65;
+            ciphertext[i] = toupper(key[index]);
+        }
+        else if (islower(text[i]))
+        {
+            index = text[i] - 97;
+            ciphertext[i] = tolower(key[index]);
+        }
+        else
+        {
+            ciphertext[i] = text[i];
+        }
+    }
+    ciphertext[len] = '\0';
+    return ciphertext;
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>More Projects</h2>
+        <p>
+          Visit my <a href="https://github.com/captainxcipher" target="_blank" style="color:#e06a86;text-decoration:underline;">GitHub page</a> and view more CS50 projects.<br>
+          <a href="../blogs.html" style="color:#e06a86;text-decoration:underline;">Back to Blogs &rarr;</a>
+        </p>
+      </div>
+
+      <div class="blog-social">
+        <a href="https://instagram.com/captainxcipher11" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.youtube.com/@captainxcipher" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="mailto:ciphercaptain@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
+    </div>
+  </footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+<script>
+function copyCode(btn) {
+  const code = btn.nextElementSibling.querySelector('code');
+  navigator.clipboard.writeText(code.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
+  });
+}
+</script>
+</body>
+</html>

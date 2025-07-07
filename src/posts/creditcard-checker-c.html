@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Credit Card Checker (CS50 Project) | Captain X Cipher</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <style>
+    .blog-container {
+      max-width: 800px;
+      margin: 2.5rem auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px rgba(35,41,70,0.07);
+      padding: 2.5rem 2rem;
+    }
+    .blog-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #181c32;
+      margin-bottom: 0.5rem;
+    }
+    .blog-meta {
+      color: #888;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+    .blog-section {
+      margin-bottom: 2.2rem;
+    }
+    .blog-section h2 {
+      color: #e06a86;
+      font-size: 1.3rem;
+      margin-bottom: 0.7rem;
+      font-weight: 700;
+    }
+    .blog-section p {
+      color: #232946;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    pre, code {
+      background: #f7f8fa;
+      color: #181c32;
+      font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 1rem;
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin-bottom: 1.2rem;
+      border: 1px solid #eaeaea;
+      display: block;
+    }
+    .blog-section code {
+      padding: 0.2rem 0.4rem;
+      font-size: 0.98rem;
+      border-radius: 5px;
+      background: #f0f0f5;
+      color: #e06a86;
+    }
+    .blog-section ul {
+      margin-bottom: 1rem;
+      padding-left: 1.2rem;
+    }
+    .blog-section li {
+      margin-bottom: 0.5rem;
+    }
+    .blog-social {
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .blog-social a {
+      color: #eebbc3;
+      font-size: 1.4rem;
+      margin-right: 1.2rem;
+      transition: color 0.2s;
+    }
+    .blog-social a:hover {
+      color: #232946;
+    }
+    @media (max-width: 600px) {
+      .blog-container { padding: 1.2rem 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header flex-header">
+    <div class="site-brand">
+      <span>Captain X Cipher</span>
+    </div>
+    <nav class="main-nav">
+      <a href="../index.html">Home</a>
+      <a href="../blogs.html" class="active">Blogs</a>
+      <a href="../about.html">About</a>
+      <a href="../contact.html">Contact Us</a>
+      <a href="../privacy.html">Privacy Policy</a>
+    </nav>
+  </header>
+  <main>
+    <div class="blog-container">
+      <div class="blog-title">Credit Card Checker: C Language<br><span style="font-size:1.1rem;font-weight:400;color:#e06a86;">CS50 Project #1</span></div>
+      <div class="blog-meta">By Captain X Cipher &nbsp;|&nbsp; July 2025</div>
+
+      <div class="blog-section">
+        <h2>Step 1: Prompting User for Input</h2>
+        <p>
+          First, we prompt the user to enter a positive credit card number using <code>get_long</code> from the CS50 library.
+        </p>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+long number;
+do
+{
+    number = get_long("Number: ");
+}
+while (number &lt; 1);
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 2: Counting the Length of the Number</h2>
+        <p>
+          We count the number of digits to help identify the card type.<br>
+          <strong>American Express</strong> uses 15 digits, <strong>MasterCard</strong> uses 16, and <strong>Visa</strong> uses 13 or 16.
+        </p>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+int length_count(long number)
+{
+    int length = 0;
+    while (number > 0)
+    {
+        number /= 10;
+        length ++;
+    }
+    return length;
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 3: Validating with Luhn’s Algorithm</h2>
+        <ul>
+          <li>Multiply every other digit by 2, starting with the second-to-last digit, and add those products’ digits together.</li>
+          <li>Add the sum to the sum of the digits that weren’t multiplied by 2.</li>
+          <li>If the total’s last digit is 0 (i.e., total modulo 10 is 0), the number is valid.</li>
+        </ul>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+char check_valid(long number)
+{
+    int sum1 = 0;  // digits not multiplied by 2
+    int sum2 = 0;  // digits multiplied by 2
+    int multiply = 0;
+    while (number > 0)
+    {
+        sum1 += number%10;
+        number /= 10;
+        multiply = number%10;
+        multiply *= 2;
+        while (multiply > 0)
+        {
+            sum2 += multiply%10;
+            multiply /= 10;
+        }
+        number /= 10;
+    }
+    int valid = sum1 + sum2;
+    if (valid%10 == 0)
+    {
+        return 'Y';
+    }
+    else
+    {
+        return 'N';
+    }
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 4: Identifying Card Type</h2>
+        <p>
+          After checking validity, we identify the card type by its length and starting digits:
+        </p>
+        <ul>
+          <li><strong>American Express</strong>: 15 digits, starts with 34 or 37</li>
+          <li><strong>MasterCard</strong>: 16 digits, starts with 51–55</li>
+          <li><strong>Visa</strong>: 13 or 16 digits, starts with 4</li>
+        </ul>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+string card_type(long number, int length)
+{
+    int n1 ;
+    if (length > 12 && length < 17 && length != 14)
+    {
+        if (length == 16)
+        {
+            n1 = number/100000000000000;
+            if (n1 > 50 && n1 < 56)
+            {
+                return "MASTERCARD";
+            }
+            else if (n1 > 39 && n1 < 50)
+            {
+                return "VISA";
+            }
+            else
+            {
+                return "INVALID";
+            }
+        }
+        else if (length == 15)
+        {
+            n1 = number/10000000000000;
+            if (n1 == 34 || n1 == 37)
+            {
+                return "AMEX";
+            }
+            else
+            {
+                return "INVALID";
+            }
+        }
+        else if (length == 13)
+        {
+            n1 = number/1000000000000;
+            if (n1 == 4)
+            {
+                return "VISA";
+            }
+            else
+            {
+                return "INVALID";
+            }
+        }
+        else
+        {
+            return "INVALID";
+        }
+    }
+    else
+    {
+        return "INVALID";
+    }
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>Step 5: Full Code</h2>
+        <p>
+          Here is the complete code with library imports, function calls, and output:
+        </p>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code class="language-c">
+#include &lt;stdio.h&gt;
+#include &lt;cs50.h&gt;
+int length_count(long number);
+char check_valid(long number);
+string card_type(long number, int length);
+int main(void)
+{
+    long number;
+    do
+    {
+        number = get_long("Number: ");
+    }
+    while (number < 1);
+    int length = length_count(number);
+    char valid = check_valid(number);
+    if (valid == 'Y' )
+    {
+        string card = card_type(number,length);
+        printf("%s\n",card);
+    }
+    else
+    {
+        printf("INVALID\n");
+    }
+}
+int length_count(long number)
+{
+    int length = 0;
+    while (number > 0)
+    {
+        number /= 10;
+        length ++;
+    }
+    return length;
+}
+char check_valid(long number)
+{
+    int sum1 = 0;
+    int sum2 = 0;
+    int multiply = 0;
+    while (number > 0)
+    {
+        sum1 += number%10;
+        number /= 10;
+        multiply = number%10;
+        multiply *= 2;
+        while (multiply > 0)
+        {
+            sum2 += multiply%10;
+            multiply /= 10;
+        }
+        number /= 10;
+    }
+    int valid = sum1 + sum2;
+    if (valid%10 == 0)
+    {
+        return 'Y';
+    }
+    else
+    {
+        return 'N';
+    }
+}
+string card_type(long number, int length)
+{
+    int n1 ;
+    if (length > 12 && length < 17 && length != 14)
+    {
+        if (length == 16)
+        {
+            n1 = number/100000000000000;
+            if (n1 > 50 && n1 < 56)
+            {
+                return "MASTERCARD";
+            }
+            else if (n1 > 39 && n1 < 50)
+            {
+                return "VISA";
+            }
+            else
+            {
+                return "INVALID";
+            }
+        }
+        else if (length == 15)
+        {
+            n1 = number/10000000000000;
+            if (n1 == 34 || n1 == 37)
+            {
+                return "AMEX";
+            }
+            else
+            {
+                return "INVALID";
+            }
+        }
+        else if (length == 13)
+        {
+            n1 = number/1000000000000;
+            if (n1 == 4)
+            {
+                return "VISA";
+            }
+            else
+            {
+                return "INVALID";
+            }
+        }
+        else
+        {
+            return "INVALID";
+        }
+    }
+    else
+    {
+        return "INVALID";
+    }
+}
+  </code></pre>
+</div>
+
+      <div class="blog-section">
+        <h2>More CS50 Projects</h2>
+        <p>
+          <a href="../blogs.html" style="color:#e06a86;text-decoration:underline;">Read more CS50 projects &rarr;</a>
+        </p>
+      </div>
+
+      <div class="blog-social">
+        <a href="https://instagram.com/captainxcipher11" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.youtube.com/@captainxcipher" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="mailto:ciphercaptain@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
+    </div>
+  </footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+<script>
+function copyCode(btn) {
+  const code = btn.nextElementSibling.querySelector('code');
+  navigator.clipboard.writeText(code.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blogs | Captain X Cipher</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    .blog-list-section {
+      max-width: 1100px;
+      margin: 2.5rem auto;
+      padding: 0 2rem;
+    }
+    .blog-list-title {
+      color: #e06a86;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 0.2rem;
+    }
+    .blog-list-section h2 {
+      font-size: 2.1rem;
+      color: #181c32;
+      font-weight: 800;
+      margin-bottom: 2rem;
+    }
+    .blog-list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+    .blog-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(35,41,70,0.07);
+      padding: 2rem 1.5rem 1.5rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: box-shadow 0.2s;
+    }
+    .blog-card:hover {
+      box-shadow: 0 4px 24px rgba(35,41,70,0.13);
+    }
+    .blog-card-title {
+      font-size: 1.3rem;
+      color: #181c32;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+    }
+    .blog-card-meta {
+      color: #888;
+      font-size: 0.98rem;
+      margin-bottom: 1rem;
+    }
+    .blog-card-desc {
+      color: #232946;
+      font-size: 1.05rem;
+      margin-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+    .blog-card-link {
+      color: #e06a86;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1.05rem;
+      transition: color 0.2s;
+    }
+    .blog-card-link:hover {
+      color: #181c32;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header flex-header">
+    <div class="site-brand">
+      <span>Captain X Cipher</span>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="blogs.html" class="active">Blogs</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </nav>
+  </header>
+  <main>
+    <section class="blog-list-section">
+      <div class="blog-list-title">MY BLOGS</div>
+      <h2>Posts by Captain X Cipher</h2>
+      <div class="blog-list-grid">
+<div class="blog-list-grid">
+  
+  <!-- Blog Post Card 1 -->
+  <div class="blog-card">
+    <div>
+      <div class="blog-card-title">
+        <i class="fas fa-shield-alt" style="color:#e06a86;margin-right:0.5rem;"></i>
+        Credit Card Checker: C Language (CS50 Project 1)
+      </div>
+      <div class="blog-card-meta">July 2025</div>
+      <div class="blog-card-desc">
+        Check if a credit card number is valid and identify its type using C and Luhn’s Algorithm. Step-by-step explanation and full code.
+      </div>
+    </div>
+    <a class="blog-card-link" href="posts/creditcard-checker-c.html">Read More &rarr;</a>
+  </div>
+  <!-- Blog Post Card 2 -->
+  <div class="blog-card">
+    <div>
+      <div class="blog-card-title">
+        <i class="fas fa-lock" style="color:#e06a86;margin-right:0.5rem;"></i>
+        Cryptography: Ciphered Text in C (CS50 Project 2)
+      </div>
+      <div class="blog-card-meta">April 13, 2025</div>
+      <div class="blog-card-desc">
+        Convert plain text to ciphered text using a 26-letter key in C. Includes input validation and full code walkthrough.
+      </div>
+    </div>
+    <a class="blog-card-link" href="posts/ciphered-text-c.html">Read More &rarr;</a>
+  </div>
+  <!-- Blog Post Card 3 -->
+  <div class="blog-card">
+    <div>
+      <div class="blog-card-title">
+        <i class="fas fa-vote-yea" style="color:#e06a86;margin-right:0.5rem;"></i>
+        Tideman Election Code: C Language (CS50 Project 3)
+      </div>
+      <div class="blog-card-meta">April 25, 2025</div>
+      <div class="blog-card-desc">
+        Implement the Tideman voting method in C. Learn how to process ranked votes, avoid cycles, and determine the true winner. Full code and explanation.
+      </div>
+    </div>
+    <a class="blog-card-link" href="posts/tideman-election-code-c.html">Read More &rarr;</a>
+  </div>
+</div>
+
+        <!-- Add more blog cards below as you publish more posts -->
+        <!--
+        <div class="blog-card">
+          <div>
+            <div class="blog-card-title">
+              <i class="fas fa-code" style="color:#e06a86;margin-right:0.5rem;"></i>
+              Your Next Blog Title
+            </div>
+            <div class="blog-card-meta">Month Year</div>
+            <div class="blog-card-desc">
+              Short summary of your next blog post goes here.
+            </div>
+          </div>
+          <a class="blog-card-link" href="posts/your-next-post.html">Read More &rarr;</a>
+        </div>
+        -->
+
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
