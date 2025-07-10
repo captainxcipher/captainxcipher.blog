@@ -2,425 +2,924 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Credit Card Checker (CS50 Project) | Captain X Cipher</title>
-  <link rel="stylesheet" href="../css/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Checker in C | CS50 Project | Captain X Cipher</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TSFC0RVZXZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TSFC0RVZXZ');
+  </script>
   <style>
-    .blog-container {
-      max-width: 800px;
-      margin: 2.5rem auto;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 2px 16px rgba(35,41,70,0.07);
-      padding: 2.5rem 2rem;
+    :root {
+      --primary: #232946;
+      --accent: #4361ee;
+      --light: #f7f8fa;
+      --dark: #181c32;
+      --text: #232946;
+      --gray: #6c757d;
+      --card-bg: #ffffff;
+      --border: #eaeaea;
+      --code-bg: #f8f9fa;
+      --code-text: #343a40;
     }
-    .blog-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #181c32;
-      margin-bottom: 0.5rem;
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .blog-meta {
-      color: #888;
-      font-size: 1rem;
-      margin-bottom: 2rem;
+    
+    body {
+      background-color: #ffffff;
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-bottom: 2rem;
     }
-    .blog-section {
-      margin-bottom: 2.2rem;
+    
+    .site-header {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
-    .blog-section h2 {
-      color: #e06a86;
-      font-size: 1.3rem;
-      margin-bottom: 0.7rem;
+    
+    .header-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .site-brand {
+      font-size: 1.6rem;
       font-weight: 700;
+      letter-spacing: 0.5px;
     }
-    .blog-section p {
-      color: #232946;
-      font-size: 1.08rem;
-      line-height: 1.7;
-      margin-bottom: 1rem;
+    
+    .site-brand span {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     }
-    pre, code {
-      background: #f7f8fa;
-      color: #181c32;
-      font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
-      font-size: 1rem;
-      border-radius: 8px;
+    
+    .main-nav {
+      display: flex;
+      gap: 1.3rem;
+      align-items: center;
+    }
+    
+    .main-nav a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.09rem;
+      transition: background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.18s;
+      padding: 0.34rem 1.05rem;
+      border-radius: 7px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      background: transparent;
+    }
+    
+    .main-nav a.active,
+    .main-nav a:hover {
+      background: #f5f5f7;
+      color: var(--primary);
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      font-weight: 700;
+      transform: translateY(-2px) scale(1.04);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+    
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--light);
       padding: 1rem;
-      overflow-x: auto;
-      margin-bottom: 1.2rem;
-      border: 1px solid #eaeaea;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(12px);
+    }
+    
+    .mobile-menu.active {
+      display: flex;
+    }
+    
+    .mobile-menu a {
       display: block;
+      padding: 1rem;
+      color: var(--primary);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-weight: 500;
+      transition: background 0.3s ease;
     }
-    .blog-section code {
-      padding: 0.2rem 0.4rem;
-      font-size: 0.98rem;
-      border-radius: 5px;
-      background: #f0f0f5;
-      color: #e06a86;
+    
+    .mobile-menu a.active,
+    .mobile-menu a:hover {
+      background: #f5f5f7;
+      color: var(--primary);
     }
-    .blog-section ul {
-      margin-bottom: 1rem;
-      padding-left: 1.2rem;
+    
+    .blog-container {
+      max-width: 850px;
+      margin: 3rem auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+      overflow: hidden;
+      position: relative;
     }
-    .blog-section li {
+    
+    .blog-header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1a1f3a 100%);
+      color: white;
+      padding: 3.5rem 2.5rem 2.5rem;
+      position: relative;
+    }
+    
+    .blog-title {
+      font-size: 2.4rem;
+      font-weight: 800;
       margin-bottom: 0.5rem;
+      line-height: 1.2;
     }
+    
+    .blog-subtitle {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #4cc9f0;
+      margin-bottom: 1.2rem;
+    }
+    
+    .blog-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .blog-content {
+      padding: 2.5rem;
+    }
+    
+    .blog-section {
+      margin-bottom: 2.8rem;
+      position: relative;
+    }
+    
+    .blog-section h2 {
+      color: var(--primary);
+      font-size: 1.5rem;
+      margin-bottom: 1.2rem;
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px dashed #dee2e6;
+    }
+    
+    .blog-section h2 i {
+      color: var(--accent);
+      margin-right: 0.7rem;
+    }
+    
+    .blog-section p {
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1.75;
+      margin-bottom: 1.2rem;
+    }
+    
+    .blog-section ul {
+      margin: 1.5rem 0;
+      padding-left: 1.8rem;
+    }
+    
+    .blog-section li {
+      margin-bottom: 0.8rem;
+      position: relative;
+    }
+    
+    .card-types {
+      display: flex;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .card-type {
+      flex: 1;
+      min-width: 200px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 1.5rem;
+      border: 1px solid #e9ecef;
+      border-left: 4px solid var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .card-type h3 {
+      margin-bottom: 0.8rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    
+    .card-type h3 i {
+      color: var(--accent);
+    }
+    
+    .card-type ul {
+      padding-left: 1.2rem;
+      margin: 0;
+    }
+    
+    .card-type li {
+      padding-left: 0;
+      margin-bottom: 0.4rem;
+    }
+    
+    .code-block {
+      position: relative;
+      margin: 1.8rem 0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      background: var(--code-bg);
+      border: 1px solid #e9ecef;
+    }
+    
+    pre, code {
+      background: var(--code-bg) !important;
+      color: var(--code-text) !important;
+      font-family: 'Fira Code', 'Consolas', 'Menlo', monospace;
+      font-size: 0.95rem;
+      padding: 1.5rem;
+      overflow-x: auto;
+      display: block;
+      border-radius: 0;
+      margin: 0;
+      line-height: 1.5;
+      tab-size: 4;
+    }
+    
+    .code-header {
+      background: #e9ecef;
+      color: #495057;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      font-family: 'Fira Code', monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .copy-btn {
+      background: #e9ecef;
+      color: #495057;
+      border: 1px solid #dee2e6;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+    .copy-btn:hover {
+      background: #dee2e6;
+      color: var(--primary);
+    }
+    
+    .algorithm-steps {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .algorithm-steps h3 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    
+    .blog-footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    
     .blog-social {
-      margin-top: 2.5rem;
-      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.8rem;
+      margin: 1.5rem 0;
     }
+    
     .blog-social a {
-      color: #eebbc3;
-      font-size: 1.4rem;
-      margin-right: 1.2rem;
-      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
     }
+    
     .blog-social a:hover {
-      color: #232946;
+      background: var(--accent);
+      transform: translateY(-3px);
     }
+    
+    .more-projects {
+      text-align: center;
+      margin: 2rem 0;
+    }
+    
+    .more-projects a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .more-projects a:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    }
+    
+    .site-footer {
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.95rem;
+      padding: 1.5rem;
+      background: #232946;
+      color: white;
+      margin-top: 2rem;
+    }
+    
+    .project-details {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      border-left: 4px solid var(--accent);
+    }
+    
+    @media (max-width: 900px) {
+      .blog-container {
+        margin: 1.5rem;
+      }
+      
+      .blog-header {
+        padding: 2.5rem 1.8rem;
+      }
+      
+      .blog-content {
+        padding: 1.8rem;
+      }
+      
+      .main-nav {
+        gap: 1rem;
+      }
+      
+      .header-wrapper {
+        padding: 0.8rem 1.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .main-nav {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .header-wrapper {
+        padding: 0.8rem 1rem;
+      }
+    }
+    
     @media (max-width: 600px) {
-      .blog-container { padding: 1.2rem 0.5rem; }
+      .blog-header {
+        padding: 2rem 1.2rem;
+      }
+      
+      .blog-title {
+        font-size: 2rem;
+      }
+      
+      .blog-content {
+        padding: 1.5rem 1.2rem;
+      }
+      
+      .card-types {
+        flex-direction: column;
+      }
+      
+      .blog-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .site-brand span {
+        font-size: 1.8rem;
+      }
     }
   </style>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TSFC0RVZXZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-TSFC0RVZXZ');
-</script>
 </head>
 <body>
-  <header class="site-header flex-header">
-    <div class="site-brand">
-      <span>Captain X Cipher</span>
+  <header class="site-header">
+    <div class="header-wrapper">
+      <div class="site-brand">
+        <span>Captain X Cipher</span>
+      </div>
+      
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav class="main-nav">
+        <a href="../index.html">Home</a>
+        <a href="../blogs.html" class="active">Blogs</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact Us</a>
+        <a href="../privacy.html">Privacy Policy</a>
+      </nav>
+      
+      <div class="mobile-menu">
+        <a href="../index.html">Home</a>
+        <a href="../blogs.html" class="active">Blogs</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact Us</a>
+        <a href="../privacy.html">Privacy Policy</a>
+      </div>
     </div>
-    <nav class="main-nav">
-      <a href="../index.html">Home</a>
-      <a href="../blogs.html" class="active">Blogs</a>
-      <a href="../about.html">About</a>
-      <a href="../contact.html">Contact Us</a>
-      <a href="../privacy.html">Privacy Policy</a>
-    </nav>
   </header>
+  
   <main>
     <div class="blog-container">
-      <div class="blog-title">Credit Card Checker: C Language<br><span style="font-size:1.1rem;font-weight:400;color:#e06a86;">CS50 Project 1</span></div>
-      <div class="blog-meta">By Captain X Cipher &nbsp;|&nbsp; July 2025</div>
-
-      <div class="blog-section">
-        <h2>Step 1: Prompting User for Input</h2>
-        <p>
-          First, we prompt the user to enter a positive credit card number using <code>get_long</code> from the CS50 library.
-        </p>
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
+      <div class="blog-header">
+        <h1 class="blog-title">Credit Card Checker in C</h1>
+        <div class="blog-subtitle">CS50 Project 1 Implementation</div>
+        <div class="blog-meta">
+          <div class="meta-item">
+            <i class="fas fa-user"></i>
+            <span>Captain X Cipher</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-calendar"></i>
+            <span>July 2025</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-tag"></i>
+            <span>CS50, C Programming, Algorithms</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="blog-content">
+        <div class="blog-section">
+          <p>
+            This project implements a credit card number validator in C, fulfilling the requirements for CS50's Problem Set 1. 
+            The solution validates credit card numbers using Luhn's algorithm and identifies the card issuer based on 
+            industry-standard patterns.
+          </p>
+          
+          <div class="project-details">
+            <h3><i class="fas fa-info-circle"></i> Project Requirements</h3>
+            <ul>
+              <li>Validate credit card numbers using Luhn's algorithm</li>
+              <li>Identify card issuer (Visa, MasterCard, American Express)</li>
+              <li>Handle different card lengths (13, 15, 16 digits)</li>
+              <li>Provide clear output (VALID/INVALID)</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-keyboard"></i> Step 1: Prompting User for Input</h2>
+          <p>
+            We start by prompting the user to enter a positive credit card number using the <code>get_long</code> function 
+            from the CS50 library. This ensures we capture the full number without truncation.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>input.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Prompt user for credit card number
 long number;
 do
 {
     number = get_long("Number: ");
 }
-while (number &lt; 1);
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 2: Counting the Length of the Number</h2>
-        <p>
-          We count the number of digits to help identify the card type.<br>
-          <strong>American Express</strong> uses 15 digits, <strong>MasterCard</strong> uses 16, and <strong>Visa</strong> uses 13 or 16.
-        </p>
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
+while (number &lt; 1);</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-ruler"></i> Step 2: Counting the Length of the Number</h2>
+          <p>
+            We need to count the number of digits to help identify the card type. Different card issuers use different lengths:
+          </p>
+          <div class="card-types">
+            <div class="card-type">
+              <h3><i class="fab fa-cc-amex"></i> American Express</h3>
+              <ul>
+                <li>15 digits</li>
+                <li>Starts with 34 or 37</li>
+              </ul>
+            </div>
+            <div class="card-type">
+              <h3><i class="fab fa-cc-mastercard"></i> MasterCard</h3>
+              <ul>
+                <li>16 digits</li>
+                <li>Starts with 51-55</li>
+              </ul>
+            </div>
+            <div class="card-type">
+              <h3><i class="fab fa-cc-visa"></i> Visa</h3>
+              <ul>
+                <li>13 or 16 digits</li>
+                <li>Starts with 4</li>
+              </ul>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span>length_count.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Count number of digits
 int length_count(long number)
 {
     int length = 0;
     while (number > 0)
     {
-        number /= 10;
-        length ++;
+        number /= 10;  // Remove last digit
+        length++;      // Increment count
     }
     return length;
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 3: Validating with Luhn’s Algorithm</h2>
-        <ul>
-          <li>Multiply every other digit by 2, starting with the second-to-last digit, and add those products’ digits together.</li>
-          <li>Add the sum to the sum of the digits that weren’t multiplied by 2.</li>
-          <li>If the total’s last digit is 0 (i.e., total modulo 10 is 0), the number is valid.</li>
-        </ul>
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-calculator"></i> Step 3: Validating with Luhn's Algorithm</h2>
+          <p>
+            Luhn's algorithm is used to validate the credit card number. The process:
+          </p>
+          
+          <div class="algorithm-steps">
+            <h3><i class="fas fa-list-ol"></i> Algorithm Steps</h3>
+            <ol>
+              <li>Starting from the second-to-last digit, multiply every other digit by 2</li>
+              <li>Add the digits of each product together</li>
+              <li>Add this sum to the sum of the digits that weren't multiplied by 2</li>
+              <li>If the total modulo 10 is 0, the card number is valid</li>
+            </ol>
+          </div>
+          
+          <div class="code-block">
+            <div class="code-header">
+              <span>check_valid.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Validate with Luhn's algorithm
 char check_valid(long number)
 {
-    int sum1 = 0;  // digits not multiplied by 2
-    int sum2 = 0;  // digits multiplied by 2
+    int sum1 = 0;  // Sum of digits not multiplied
+    int sum2 = 0;  // Sum of digits from multiplied numbers
     int multiply = 0;
+    
     while (number > 0)
     {
-        sum1 += number%10;
+        // Add last digit to sum1
+        sum1 += number % 10;
         number /= 10;
-        multiply = number%10;
+        
+        // Multiply next digit by 2
+        multiply = number % 10;
         multiply *= 2;
+        
+        // Add digits of product to sum2
         while (multiply > 0)
         {
-            sum2 += multiply%10;
+            sum2 += multiply % 10;
             multiply /= 10;
         }
+        
         number /= 10;
     }
-    int valid = sum1 + sum2;
-    if (valid%10 == 0)
-    {
-        return 'Y';
-    }
-    else
-    {
-        return 'N';
-    }
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 4: Identifying Card Type</h2>
-        <p>
-          After checking validity, we identify the card type by its length and starting digits:
-        </p>
-        <ul>
-          <li><strong>American Express</strong>: 15 digits, starts with 34 or 37</li>
-          <li><strong>MasterCard</strong>: 16 digits, starts with 51–55</li>
-          <li><strong>Visa</strong>: 13 or 16 digits, starts with 4</li>
-        </ul>
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
+    
+    // Check if total ends with 0
+    int total = sum1 + sum2;
+    return (total % 10 == 0) ? 'Y' : 'N';
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-credit-card"></i> Step 4: Identifying Card Type</h2>
+          <p>
+            After validation, we identify the card issuer based on length and starting digits:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>card_type.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Identify card issuer
 string card_type(long number, int length)
 {
-    int n1 ;
-    if (length > 12 && length < 17 && length != 14)
+    int prefix;
+    
+    // Check American Express (15 digits)
+    if (length == 15)
     {
-        if (length == 16)
-        {
-            n1 = number/100000000000000;
-            if (n1 > 50 && n1 < 56)
-            {
-                return "MASTERCARD";
-            }
-            else if (n1 > 39 && n1 < 50)
-            {
-                return "VISA";
-            }
-            else
-            {
-                return "INVALID";
-            }
-        }
-        else if (length == 15)
-        {
-            n1 = number/10000000000000;
-            if (n1 == 34 || n1 == 37)
-            {
-                return "AMEX";
-            }
-            else
-            {
-                return "INVALID";
-            }
-        }
-        else if (length == 13)
-        {
-            n1 = number/1000000000000;
-            if (n1 == 4)
-            {
-                return "VISA";
-            }
-            else
-            {
-                return "INVALID";
-            }
-        }
-        else
-        {
-            return "INVALID";
-        }
+        prefix = number / 10000000000000;  // First two digits
+        if (prefix == 34 || prefix == 37)
+            return "AMEX";
     }
-    else
+    // Check 16-digit cards
+    else if (length == 16)
     {
-        return "INVALID";
+        prefix = number / 100000000000000;  // First two digits
+        
+        // MasterCard (51-55)
+        if (prefix >= 51 && prefix <= 55)
+            return "MASTERCARD";
+        
+        // Visa (starts with 4)
+        if (prefix / 10 == 4)
+            return "VISA";
     }
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 5: Full Code</h2>
-        <p>
-          Here is the complete code with library imports, function calls, and output:
-        </p>
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
-#include &lt;stdio.h&gt;
+    // Check Visa (13 digits)
+    else if (length == 13)
+    {
+        prefix = number / 1000000000000;  // First digit
+        if (prefix == 4)
+            return "VISA";
+    }
+    
+    return "INVALID";
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-code"></i> Step 5: Full Implementation</h2>
+          <p>
+            The complete solution integrates all components to validate and identify credit cards:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>creditcard.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">#include &lt;stdio.h&gt;
 #include &lt;cs50.h&gt;
+
+// Function prototypes
 int length_count(long number);
 char check_valid(long number);
 string card_type(long number, int length);
+
 int main(void)
 {
+    // Prompt user for credit card number
     long number;
     do
     {
         number = get_long("Number: ");
     }
     while (number < 1);
+
+    // Calculate number length
     int length = length_count(number);
+    
+    // Validate using Luhn's algorithm
     char valid = check_valid(number);
-    if (valid == 'Y' )
+    
+    // Output result
+    if (valid == 'Y')
     {
-        string card = card_type(number,length);
-        printf("%s\n",card);
+        string card = card_type(number, length);
+        printf("%s\n", card);
     }
     else
     {
         printf("INVALID\n");
     }
 }
+
+// Count number of digits
 int length_count(long number)
 {
     int length = 0;
     while (number > 0)
     {
         number /= 10;
-        length ++;
+        length++;
     }
     return length;
 }
+
+// Validate with Luhn's algorithm
 char check_valid(long number)
 {
-    int sum1 = 0;
-    int sum2 = 0;
+    int sum1 = 0;  // Sum of digits not multiplied
+    int sum2 = 0;  // Sum of digits from multiplied numbers
     int multiply = 0;
+    
     while (number > 0)
     {
-        sum1 += number%10;
+        sum1 += number % 10;
         number /= 10;
-        multiply = number%10;
+        
+        multiply = number % 10;
         multiply *= 2;
+        
         while (multiply > 0)
         {
-            sum2 += multiply%10;
+            sum2 += multiply % 10;
             multiply /= 10;
         }
+        
         number /= 10;
     }
-    int valid = sum1 + sum2;
-    if (valid%10 == 0)
-    {
-        return 'Y';
-    }
-    else
-    {
-        return 'N';
-    }
+    
+    int total = sum1 + sum2;
+    return (total % 10 == 0) ? 'Y' : 'N';
 }
+
+// Identify card issuer
 string card_type(long number, int length)
 {
-    int n1 ;
-    if (length > 12 && length < 17 && length != 14)
+    int prefix;
+    
+    if (length == 15)
     {
-        if (length == 16)
-        {
-            n1 = number/100000000000000;
-            if (n1 > 50 && n1 < 56)
-            {
-                return "MASTERCARD";
-            }
-            else if (n1 > 39 && n1 < 50)
-            {
-                return "VISA";
-            }
-            else
-            {
-                return "INVALID";
-            }
-        }
-        else if (length == 15)
-        {
-            n1 = number/10000000000000;
-            if (n1 == 34 || n1 == 37)
-            {
-                return "AMEX";
-            }
-            else
-            {
-                return "INVALID";
-            }
-        }
-        else if (length == 13)
-        {
-            n1 = number/1000000000000;
-            if (n1 == 4)
-            {
-                return "VISA";
-            }
-            else
-            {
-                return "INVALID";
-            }
-        }
-        else
-        {
-            return "INVALID";
-        }
+        prefix = number / 10000000000000;
+        if (prefix == 34 || prefix == 37)
+            return "AMEX";
     }
-    else
+    else if (length == 16)
     {
-        return "INVALID";
+        prefix = number / 100000000000000;
+        
+        if (prefix >= 51 && prefix <= 55)
+            return "MASTERCARD";
+        
+        if (prefix / 10 == 4)
+            return "VISA";
     }
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>More CS50 Projects</h2>
-        <p>
-          <a href="../blogs.html" style="color:#e06a86;text-decoration:underline;">Read more CS50 projects &rarr;</a>
-        </p>
-      </div>
-
-      <div class="blog-social">
-        <a href="https://instagram.com/captainxcipher11" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.youtube.com/@captainxcipher" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-        <a href="mailto:ciphercaptain@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+    else if (length == 13)
+    {
+        prefix = number / 1000000000000;
+        if (prefix == 4)
+            return "VISA";
+    }
+    
+    return "INVALID";
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-lightbulb"></i> Key Considerations</h2>
+          <ul>
+            <li><strong>Input Validation:</strong> The program ensures only positive numbers are accepted</li>
+            <li><strong>Edge Cases:</strong> Handles invalid lengths and prefixes appropriately</li>
+            <li><strong>Algorithm Accuracy:</strong> Correctly implements Luhn's algorithm for validation</li>
+            <li><strong>Performance:</strong> Efficiently processes even large numbers</li>
+            <li><strong>Readability:</strong> Well-structured code with clear function separation</li>
+          </ul>
+        </div>
+        
+        <div class="blog-footer">
+          <div class="more-projects">
+            <a href="../blogs.html">
+              <i class="fas fa-arrow-right"></i>
+              Explore More CS50 Projects
+            </a>
+          </div>
+          
+          <div class="blog-social">
+            <a href="https://instagram.com/captainxcipher11" target="_blank" title="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.youtube.com/@captainxcipher" target="_blank" title="YouTube">
+              <i class="fab fa-youtube"></i>
+            </a>
+            <a href="mailto:ciphercaptain@gmail.com" title="Email">
+              <i class="fas fa-envelope"></i>
+            </a>
+            <a href="#" title="Share">
+              <i class="fas fa-share-alt"></i>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </main>
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
-    </div>
+  
+  <footer class="site-footer">
+    <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
   </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
-<script>
-function copyCode(btn) {
-  const code = btn.nextElementSibling.querySelector('code');
-  navigator.clipboard.writeText(code.innerText).then(() => {
-    btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
-  });
-}
-</script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      const mobileMenu = document.querySelector('.mobile-menu');
+      
+      if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+          mobileMenu.classList.toggle('active');
+        });
+      }
+      
+      // Copy button functionality
+      const copyButtons = document.querySelectorAll('.copy-btn');
+      
+      copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const codeBlock = this.closest('.code-block');
+          const code = codeBlock.querySelector('code').innerText;
+          
+          navigator.clipboard.writeText(code).then(() => {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            
+            setTimeout(() => {
+              this.innerHTML = originalText;
+            }, 1500);
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html>

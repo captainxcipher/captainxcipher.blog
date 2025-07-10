@@ -3,196 +3,683 @@
 <head>
   <meta charset="UTF-8">
   <title>Tideman Election Code in C (CS50 Project) | Captain X Cipher</title>
-  <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TSFC0RVZXZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TSFC0RVZXZ');
+  </script>
   <style>
-    .blog-container {
-      max-width: 800px;
-      margin: 2.5rem auto;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 2px 16px rgba(35,41,70,0.07);
-      padding: 2.5rem 2rem;
+    :root {
+      --primary: #232946;
+      --accent: #4361ee;
+      --light: #f7f8fa;
+      --dark: #181c32;
+      --text: #232946;
+      --gray: #6c757d;
+      --card-bg: #ffffff;
+      --border: #eaeaea;
+      --code-bg: #f8f9fa;
+      --code-text: #343a40;
     }
-    .blog-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #181c32;
-      margin-bottom: 0.5rem;
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .blog-meta {
-      color: #888;
-      font-size: 1rem;
-      margin-bottom: 2rem;
+    
+    body {
+      background-color: #ffffff;
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-bottom: 2rem;
     }
-    .blog-section {
-      margin-bottom: 2.2rem;
+    
+    .site-header {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
-    .blog-section h2 {
-      color: #e06a86;
-      font-size: 1.3rem;
-      margin-bottom: 0.7rem;
+    
+    .header-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .site-brand {
+      font-size: 1.6rem;
       font-weight: 700;
+      letter-spacing: 0.5px;
     }
-    .blog-section p {
-      color: #232946;
-      font-size: 1.08rem;
-      line-height: 1.7;
-      margin-bottom: 1rem;
+    
+    .site-brand span {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     }
-    pre, code {
-      background: #f7f8fa;
-      color: #181c32;
-      font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
-      font-size: 1rem;
-      border-radius: 8px;
+    
+    .main-nav {
+      display: flex;
+      gap: 1.3rem;
+      align-items: center;
+    }
+    
+    .main-nav a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.09rem;
+      transition: background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.18s;
+      padding: 0.34rem 1.05rem;
+      border-radius: 7px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      background: transparent;
+    }
+    
+    .main-nav a.active,
+    .main-nav a:hover {
+      background: #f5f5f7;
+      color: var(--primary);
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      font-weight: 700;
+      transform: translateY(-2px) scale(1.04);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+    
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--light);
       padding: 1rem;
-      overflow-x: auto;
-      margin-bottom: 1.2rem;
-      border: 1px solid #eaeaea;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(12px);
+    }
+    
+    .mobile-menu.active {
+      display: flex;
+    }
+    
+    .mobile-menu a {
       display: block;
+      padding: 1rem;
+      color: var(--primary);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-weight: 500;
+      transition: background 0.3s ease;
     }
-    .blog-section code {
-      padding: 0.2rem 0.4rem;
-      font-size: 0.98rem;
-      border-radius: 5px;
-      background: #f0f0f5;
-      color: #e06a86;
+    
+    .mobile-menu a.active,
+    .mobile-menu a:hover {
+      background: #f5f5f7;
+      color: var(--primary);
     }
-    .blog-section ul {
-      margin-bottom: 1rem;
-      padding-left: 1.2rem;
+    
+    .blog-container {
+      max-width: 850px;
+      margin: 3rem auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+      overflow: hidden;
+      position: relative;
     }
-    .blog-section li {
+    
+    .blog-header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1a1f3a 100%);
+      color: white;
+      padding: 3.5rem 2.5rem 2.5rem;
+      position: relative;
+    }
+    
+    .blog-title {
+      font-size: 2.4rem;
+      font-weight: 800;
       margin-bottom: 0.5rem;
+      line-height: 1.2;
     }
+    
+    .blog-subtitle {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #4cc9f0;
+      margin-bottom: 1.2rem;
+    }
+    
+    .blog-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .blog-content {
+      padding: 2.5rem;
+    }
+    
+    .blog-section {
+      margin-bottom: 2.8rem;
+      position: relative;
+    }
+    
+    .blog-section h2 {
+      color: var(--primary);
+      font-size: 1.5rem;
+      margin-bottom: 1.2rem;
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px dashed #dee2e6;
+    }
+    
+    .blog-section h2 i {
+      color: var(--accent);
+      margin-right: 0.7rem;
+    }
+    
+    .blog-section p {
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1.75;
+      margin-bottom: 1.2rem;
+    }
+    
+    .blog-section ul {
+      margin: 1.5rem 0;
+      padding-left: 1.8rem;
+    }
+    
+    .blog-section li {
+      margin-bottom: 0.8rem;
+      position: relative;
+    }
+    
+    .code-block {
+      position: relative;
+      margin: 1.8rem 0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      background: var(--code-bg);
+      border: 1px solid #e9ecef;
+    }
+    
+    pre, code {
+      background: var(--code-bg) !important;
+      color: var(--code-text) !important;
+      font-family: 'Fira Code', 'Consolas', 'Menlo', monospace;
+      font-size: 0.95rem;
+      padding: 1.5rem;
+      overflow-x: auto;
+      display: block;
+      border-radius: 0;
+      margin: 0;
+      line-height: 1.5;
+      tab-size: 4;
+    }
+    
+    .code-header {
+      background: #e9ecef;
+      color: #495057;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      font-family: 'Fira Code', monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .copy-btn {
+      background: #e9ecef;
+      color: #495057;
+      border: 1px solid #dee2e6;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+    .copy-btn:hover {
+      background: #dee2e6;
+      color: var(--primary);
+    }
+    
+    .algorithm-steps {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .algorithm-steps h3 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    
+    .blog-footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    
     .blog-social {
-      margin-top: 2.5rem;
-      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.8rem;
+      margin: 1.5rem 0;
     }
+    
     .blog-social a {
-      color: #eebbc3;
-      font-size: 1.4rem;
-      margin-right: 1.2rem;
-      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
     }
+    
     .blog-social a:hover {
-      color: #232946;
+      background: var(--accent);
+      transform: translateY(-3px);
     }
+    
+    .more-projects {
+      text-align: center;
+      margin: 2rem 0;
+    }
+    
+    .more-projects a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .more-projects a:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    }
+    
+    .site-footer {
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.95rem;
+      padding: 1.5rem;
+      background: #232946;
+      color: white;
+      margin-top: 2rem;
+    }
+    
+    .project-details {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .election-diagram {
+      background: #f0f4ff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .election-diagram h3 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    
+    .function-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .function-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border-left: 4px solid var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .function-card h3 {
+      margin-bottom: 0.8rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    
+    @media (max-width: 900px) {
+      .blog-container {
+        margin: 1.5rem;
+      }
+      
+      .blog-header {
+        padding: 2.5rem 1.8rem;
+      }
+      
+      .blog-content {
+        padding: 1.8rem;
+      }
+      
+      .main-nav {
+        gap: 1rem;
+      }
+      
+      .header-wrapper {
+        padding: 0.8rem 1.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .main-nav {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .header-wrapper {
+        padding: 0.8rem 1rem;
+      }
+    }
+    
     @media (max-width: 600px) {
-      .blog-container { padding: 1.2rem 0.5rem; }
+      .blog-header {
+        padding: 2rem 1.2rem;
+      }
+      
+      .blog-title {
+        font-size: 2rem;
+      }
+      
+      .blog-content {
+        padding: 1.5rem 1.2rem;
+      }
+      
+      .blog-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .site-brand span {
+        font-size: 1.8rem;
+      }
+      
+      .function-summary {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TSFC0RVZXZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-TSFC0RVZXZ');
-</script>
 </head>
 <body>
-  <header class="site-header flex-header">
-    <div class="site-brand">
-      <span>Captain X Cipher</span>
+  <header class="site-header">
+    <div class="header-wrapper">
+      <div class="site-brand">
+        <span>Captain X Cipher</span>
+      </div>
+      
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav class="main-nav">
+        <a href="../index.html">Home</a>
+        <a href="../blogs.html" class="active">Blogs</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact Us</a>
+        <a href="../privacy.html">Privacy Policy</a>
+      </nav>
+      
+      <div class="mobile-menu">
+        <a href="../index.html">Home</a>
+        <a href="../blogs.html" class="active">Blogs</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact Us</a>
+        <a href="../privacy.html">Privacy Policy</a>
+      </div>
     </div>
-    <nav class="main-nav">
-      <a href="../index.html">Home</a>
-      <a href="../blogs.html" class="active">Blogs</a>
-      <a href="../about.html">About</a>
-      <a href="../contact.html">Contact Us</a>
-      <a href="../privacy.html">Privacy Policy</a>
-    </nav>
   </header>
+  
   <main>
     <div class="blog-container">
-      <div class="blog-title">Tideman Election Code in C<br><span style="font-size:1.1rem;font-weight:400;color:#e06a86;">CS50 Project 3</span></div>
-      <div class="blog-meta">By Captain X Cipher &nbsp;|&nbsp; July 2025</div>
-
-      <div class="blog-section">
-        <h2>Introduction</h2>
-        <p>
-          The Tideman voting method (Ranked Pairs) determines the winner of an election based on ranked preferences from voters. Instead of just picking a candidate with the most votes, Tideman compares every pair of candidates head-to-head, locks in the strongest wins, and avoids cycles to ensure the winner is the most broadly preferred.
-        </p>
+      <div class="blog-header">
+        <h1 class="blog-title">Tideman Election Code in C</h1>
+        <div class="blog-subtitle">CS50 Project 3 Implementation</div>
+        <div class="blog-meta">
+          <div class="meta-item">
+            <i class="fas fa-user"></i>
+            <span>Captain X Cipher</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-calendar"></i>
+            <span>July 2025</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-tag"></i>
+            <span>CS50, C Programming, Algorithms</span>
+          </div>
+        </div>
       </div>
-
-      <div class="blog-section">
-        <h2>Step 1: The vote Function</h2>
-        <p>
-          This function takes the rank, candidate name, and ranks array. It stores the voter's preference and returns <code>true</code> if the candidate is found.
-        </p>
-
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
-bool vote(int rank, string name, int ranks[])
+      
+      <div class="blog-content">
+        <div class="blog-section">
+          <p>
+            The Tideman voting method (Ranked Pairs) determines the winner of an election based on ranked preferences from voters. 
+            Instead of just picking a candidate with the most votes, Tideman compares every pair of candidates head-to-head, 
+            locks in the strongest wins, and avoids cycles to ensure the winner is the most broadly preferred.
+          </p>
+          
+          <div class="project-details">
+            <h3><i class="fas fa-info-circle"></i> Project Requirements</h3>
+            <ul>
+              <li>Implement the Tideman (ranked pairs) voting system</li>
+              <li>Handle voter preferences and candidate data</li>
+              <li>Record pairwise preferences between candidates</li>
+              <li>Sort pairs by strength of victory</li>
+              <li>Lock pairs without creating cycles in the graph</li>
+              <li>Determine and print the election winner</li>
+            </ul>
+          </div>
+          
+          <div class="election-diagram">
+            <h3><i class="fas fa-sitemap"></i> Tideman Algorithm Flow</h3>
+            <ol>
+              <li>Collect voter preferences</li>
+              <li>Record pairwise preferences between candidates</li>
+              <li>Create pairs of candidates (winner vs loser)</li>
+              <li>Sort pairs by strength of victory</li>
+              <li>Lock pairs in order without creating cycles</li>
+              <li>Find the source of the graph (candidate with no incoming edges)</li>
+              <li>Print the winner</li>
+            </ol>
+          </div>
+        </div>
+        
+        <div class="function-summary">
+          <div class="function-card">
+            <h3><i class="fas fa-vote-yea"></i> vote()</h3>
+            <p>Records a voter's preference for a candidate at a specific rank.</p>
+          </div>
+          
+          <div class="function-card">
+            <h3><i class="fas fa-table"></i> record_preferences()</h3>
+            <p>Updates the preferences matrix based on a voter's ranked choices.</p>
+          </div>
+          
+          <div class="function-card">
+            <h3><i class="fas fa-link"></i> add_pairs()</h3>
+            <p>Creates pairs of candidates with one preferred over the other.</p>
+          </div>
+          
+          <div class="function-card">
+            <h3><i class="fas fa-sort-amount-down"></i> sort_pairs()</h3>
+            <p>Sorts pairs by the strength of victory (difference in preferences).</p>
+          </div>
+          
+          <div class="function-card">
+            <h3><i class="fas fa-lock"></i> lock_pairs()</h3>
+            <p>Locks pairs into the graph without creating cycles.</p>
+          </div>
+          
+          <div class="function-card">
+            <h3><i class="fas fa-trophy"></i> print_winner()</h3>
+            <p>Finds and prints the source candidate (with no incoming edges).</p>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-vote-yea"></i> Step 1: The vote Function</h2>
+          <p>
+            This function takes the rank, candidate name, and ranks array. It stores the voter's preference and returns <code>true</code> if the candidate is found.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>tideman.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">bool vote(int rank, string name, int ranks[])
 {
     for (int i = 0; i < candidate_count; i++)
     {
-        if (strcmp(candidates[i],name) == 0)
+        if (strcmp(candidates[i], name) == 0)
         {
             ranks[rank] = i;
             return true;
         }
     }
     return false;
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 2: Recording Preferences</h2>
-        <p>
-          This function updates the <code>preferences</code> 2D array to count how many voters prefer candidate <code>i</code> over <code>j</code>.
-        </p>
-
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
-// preferences[i][j] is number of voters who prefer i over j
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-table"></i> Step 2: Recording Preferences</h2>
+          <p>
+            This function updates the <code>preferences</code> 2D array to count how many voters prefer candidate <code>i</code> over <code>j</code>.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>tideman.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// preferences[i][j] is number of voters who prefer i over j
 int preferences[MAX][MAX];
+
 // Update preferences given one voter's ranks
 void record_preferences(int ranks[])
 {
     for (int i = 0 ; i < candidate_count; i++)
     {
-        for (int j = i+1; j < candidate_count; j++)
+        for (int j = i + 1; j < candidate_count; j++)
         {
-            preferences[ranks[i]][ranks[j]] ++;
+            preferences[ranks[i]][ranks[j]]++;
         }
     }
     return;
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 3: Adding Pairs</h2>
-        <p>
-          This function creates all possible pairs of candidates and determines the winner and loser for each pair based on preferences.
-        </p>
-
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
-// Each pair has a winner, loser
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-link"></i> Step 3: Adding Pairs</h2>
+          <p>
+            This function creates all possible pairs of candidates and determines the winner and loser for each pair based on preferences.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>tideman.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Each pair has a winner, loser
 typedef struct
 {
     int winner;
     int loser;
 } pair;
+
 // Array of candidates
 string candidates[MAX];
 pair pairs[MAX * (MAX - 1) / 2];
+
 // Record pairs of candidates where one is preferred over the other
 void add_pairs(void)
 {
-    for (int i= 0; i < candidate_count; i++)
+    for (int i = 0; i < candidate_count; i++)
     {
-        for (int j = i+1 ; j < candidate_count; j++)
+        for (int j = i + 1; j < candidate_count; j++)
         {
             if (preferences[i][j] > preferences[j][i])
             {
@@ -209,20 +696,21 @@ void add_pairs(void)
         }
     }
     return;
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 4: Sorting Pairs</h2>
-        <p>
-          This function sorts the pairs in decreasing order by the strength of victory using bubble sort.
-        </p>
-
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
-// Sort pairs in decreasing order by strength of victory
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-sort-amount-down"></i> Step 4: Sorting Pairs</h2>
+          <p>
+            This function sorts the pairs in decreasing order by the strength of victory using bubble sort.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>tideman.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Sort pairs in decreasing order by strength of victory
 void sort_pairs(void)
 {
     int swap = 1;
@@ -231,8 +719,10 @@ void sort_pairs(void)
         swap = 0;
         for (int i = 0; i < pair_count - 1; i++)
         {
-            int diff1 = preferences[pairs[i].winner][pairs[i].loser] - preferences[pairs[i].loser][pairs[i].winner];
-            int diff2 = preferences[pairs[i+1].winner][pairs[i+1].loser] - preferences[pairs[i+1].loser][pairs[i+1].winner];
+            int diff1 = preferences[pairs[i].winner][pairs[i].loser] - 
+                        preferences[pairs[i].loser][pairs[i].winner];
+            int diff2 = preferences[pairs[i+1].winner][pairs[i+1].loser] - 
+                        preferences[pairs[i+1].loser][pairs[i+1].winner];
             if (diff1 < diff2)
             {
                 pair temp = pairs[i];
@@ -243,34 +733,36 @@ void sort_pairs(void)
         }
     }
     return;
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 5: Locking Pairs Without Cycles</h2>
-        <p>
-          This function locks pairs into the candidate graph in order, without creating cycles. The helper function <code>creates_cycle</code> checks for cycles.
-        </p>
-
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
-// Lock pairs into the candidate graph in order, without creating cycles
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-lock"></i> Step 5: Locking Pairs Without Cycles</h2>
+          <p>
+            This function locks pairs into the candidate graph in order, without creating cycles. The helper function <code>creates_cycle</code> checks for cycles.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>tideman.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Lock pairs into the candidate graph in order, without creating cycles
 void lock_pairs(void)
 {
     for (int i = 0; i < pair_count; i++)
     {
         int winner = pairs[i].winner;
         int loser = pairs[i].loser;
-        if(!creates_cycle(winner,loser))
+        if (!creates_cycle(winner, loser))
         {
             locked[winner][loser] = true;
         }
     }
     return;
 }
-// added for check cycle creation in locking tough to find in lock pair fn so made extra function
+
+// Check if locking would create a cycle
 bool creates_cycle(int winner, int loser)
 {
     if (locked[loser][winner] == true)
@@ -279,29 +771,30 @@ bool creates_cycle(int winner, int loser)
     }
     for (int i = 0; i < candidate_count; i++)
     {
-        if (locked[i][winner]== true)
+        if (locked[i][winner] == true)
         {
-            if(creates_cycle(i,loser))
+            if (creates_cycle(i, loser))
             {
                 return true;
             }
         }
     }
     return false;
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Step 6: Printing the Winner</h2>
-        <p>
-          This function finds and prints the winner: the candidate who does not have any arrow pointing to them in the locked array.
-        </p>
-
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
-// Print the winner of the election
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-trophy"></i> Step 6: Printing the Winner</h2>
+          <p>
+            This function finds and prints the winner: the candidate who does not have any arrow pointing to them in the locked array.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>tideman.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Print the winner of the election
 void print_winner(void)
 {
     for (int i = 0; i < candidate_count; i++)
@@ -321,39 +814,46 @@ void print_winner(void)
             return;
         }
     }
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>Full Code</h2>
-        <p>
-          Here is the complete structure of the program, including function prototypes and the main logic:
-        </p>
-
-<div class="code-block">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code class="language-c">
-#include "cs50.h"
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-code"></i> Full Implementation</h2>
+          <p>
+            The complete Tideman voting system implementation with all functions and main logic:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>tideman.c</span>
+              <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">#include "cs50.h"
 #include &lt;stdio.h&gt;
 #include &lt;string.h&gt;
+
 // Max number of candidates
 #define MAX 9
+
 // preferences[i][j] is number of voters who prefer i over j
 int preferences[MAX][MAX];
+
 // locked[i][j] means i is locked in over j
 bool locked[MAX][MAX];
+
 // Each pair has a winner, loser
 typedef struct
 {
     int winner;
     int loser;
 } pair;
+
 // Array of candidates
 string candidates[MAX];
 pair pairs[MAX * (MAX - 1) / 2];
 int pair_count;
 int candidate_count;
+
 // Function prototypes
 bool vote(int rank, string name, int ranks[]);
 void record_preferences(int ranks[]);
@@ -362,6 +862,7 @@ void sort_pairs(void);
 void lock_pairs(void);
 bool creates_cycle(int winner, int loser);
 void print_winner(void);
+
 int main(int argc, string argv[])
 {
     // Check for invalid usage
@@ -370,6 +871,7 @@ int main(int argc, string argv[])
         printf("Usage: tideman [candidate ...]\n");
         return 1;
     }
+
     // Populate array of candidates
     candidate_count = argc - 1;
     if (candidate_count > MAX)
@@ -377,10 +879,12 @@ int main(int argc, string argv[])
         printf("Maximum number of candidates is %i\n", MAX);
         return 2;
     }
+    
     for (int i = 0; i < candidate_count; i++)
     {
         candidates[i] = argv[i + 1];
     }
+
     // Clear graph of locked in pairs
     for (int i = 0; i < candidate_count; i++)
     {
@@ -389,13 +893,16 @@ int main(int argc, string argv[])
             locked[i][j] = false;
         }
     }
+
     pair_count = 0;
     int voter_count = get_int("Number of voters: ");
+
     // Query for votes
     for (int i = 0; i < voter_count; i++)
     {
         // ranks[i] is voter's ith preference
         int ranks[candidate_count];
+
         // Query for each rank
         for (int j = 0; j < candidate_count; j++)
         {
@@ -409,18 +916,20 @@ int main(int argc, string argv[])
         record_preferences(ranks);
         printf("\n");
     }
+
     add_pairs();
     sort_pairs();
     lock_pairs();
     print_winner();
     return 0;
 }
+
 // Update ranks given a new vote
 bool vote(int rank, string name, int ranks[])
 {
     for (int i = 0; i < candidate_count; i++)
     {
-        if (strcmp(candidates[i],name) == 0)
+        if (strcmp(candidates[i], name) == 0)
         {
             ranks[rank] = i;
             return true;
@@ -428,24 +937,26 @@ bool vote(int rank, string name, int ranks[])
     }
     return false;
 }
+
 // Update preferences given one voter's ranks
 void record_preferences(int ranks[])
 {
-    for (int i = 0 ; i < candidate_count; i++)
+    for (int i = 0; i < candidate_count; i++)
     {
-        for (int j = i+1; j < candidate_count; j++)
+        for (int j = i + 1; j < candidate_count; j++)
         {
-            preferences[ranks[i]][ranks[j]] ++;
+            preferences[ranks[i]][ranks[j]]++;
         }
     }
     return;
 }
+
 // Record pairs of candidates where one is preferred over the other
 void add_pairs(void)
 {
-    for (int i= 0; i < candidate_count; i++)
+    for (int i = 0; i < candidate_count; i++)
     {
-        for (int j = i+1 ; j < candidate_count; j++)
+        for (int j = i + 1; j < candidate_count; j++)
         {
             if (preferences[i][j] > preferences[j][i])
             {
@@ -463,6 +974,7 @@ void add_pairs(void)
     }
     return;
 }
+
 // Sort pairs in decreasing order by strength of victory
 void sort_pairs(void)
 {
@@ -472,8 +984,10 @@ void sort_pairs(void)
         swap = 0;
         for (int i = 0; i < pair_count - 1; i++)
         {
-            int diff1 = preferences[pairs[i].winner][pairs[i].loser] - preferences[pairs[i].loser][pairs[i].winner];
-            int diff2 = preferences[pairs[i+1].winner][pairs[i+1].loser] - preferences[pairs[i+1].loser][pairs[i+1].winner];
+            int diff1 = preferences[pairs[i].winner][pairs[i].loser] - 
+                        preferences[pairs[i].loser][pairs[i].winner];
+            int diff2 = preferences[pairs[i+1].winner][pairs[i+1].loser] - 
+                        preferences[pairs[i+1].loser][pairs[i+1].winner];
             if (diff1 < diff2)
             {
                 pair temp = pairs[i];
@@ -485,6 +999,7 @@ void sort_pairs(void)
     }
     return;
 }
+
 // Lock pairs into the candidate graph in order, without creating cycles
 void lock_pairs(void)
 {
@@ -492,14 +1007,15 @@ void lock_pairs(void)
     {
         int winner = pairs[i].winner;
         int loser = pairs[i].loser;
-        if(!creates_cycle(winner,loser))
+        if (!creates_cycle(winner, loser))
         {
             locked[winner][loser] = true;
         }
     }
     return;
 }
-// added for check cycle creation in locking tough to find in lock pair fn so made extra function
+
+// Check if locking would create a cycle
 bool creates_cycle(int winner, int loser)
 {
     if (locked[loser][winner] == true)
@@ -508,9 +1024,9 @@ bool creates_cycle(int winner, int loser)
     }
     for (int i = 0; i < candidate_count; i++)
     {
-        if (locked[i][winner]== true)
+        if (locked[i][winner] == true)
         {
-            if(creates_cycle(i,loser))
+            if (creates_cycle(i, loser))
             {
                 return true;
             }
@@ -518,6 +1034,7 @@ bool creates_cycle(int winner, int loser)
     }
     return false;
 }
+
 // Print the winner of the election
 void print_winner(void)
 {
@@ -538,40 +1055,97 @@ void print_winner(void)
             return;
         }
     }
-}
-  </code></pre>
-</div>
-
-      <div class="blog-section">
-        <h2>More Projects</h2>
-        <p>
-          Visit my <a href="https://github.com/captainxcipher" target="_blank" style="color:#e06a86;text-decoration:underline;">GitHub page</a> and view more CS50 projects.<br>
-          <a href="../blogs.html" style="color:#e06a86;text-decoration:underline;">Back to Blogs &rarr;</a>
-        </p>
-      </div>
-
-      <div class="blog-social">
-        <a href="https://instagram.com/captainxcipher11" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.youtube.com/@captainxcipher" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-        <a href="mailto:ciphercaptain@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-lightbulb"></i> Key Considerations</h2>
+          <ul>
+            <li><strong>Cycle Detection:</strong> Recursive function to prevent cycles in the graph</li>
+            <li><strong>Pair Sorting:</strong> Sorting by strength of victory ensures strongest preferences are locked first</li>
+            <li><strong>Graph Representation:</strong> Using a locked matrix to represent edges between candidates</li>
+            <li><strong>Source Detection:</strong> Finding the candidate with no incoming edges to determine the winner</li>
+            <li><strong>Input Validation:</strong> Ensuring votes are for valid candidates</li>
+          </ul>
+          
+          <div class="election-diagram">
+            <h3><i class="fas fa-laptop-code"></i> Example Execution</h3>
+            <p><strong>Candidates:</strong> Alice, Bob, Charlie</p>
+            <p><strong>Voter Preferences:</strong></p>
+            <ul>
+              <li>Voter 1: Alice > Bob > Charlie</li>
+              <li>Voter 2: Bob > Charlie > Alice</li>
+              <li>Voter 3: Charlie > Alice > Bob</li>
+            </ul>
+            <p><strong>Result:</strong> Alice wins according to Tideman method</p>
+          </div>
+        </div>
+        
+        <div class="blog-footer">
+          <div class="more-projects">
+            <a href="../blogs.html">
+              <i class="fas fa-arrow-right"></i>
+              Explore More CS50 Projects
+            </a>
+          </div>
+          
+          <div class="blog-social">
+            <a href="https://instagram.com/captainxcipher11" target="_blank" title="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.youtube.com/@captainxcipher" target="_blank" title="YouTube">
+              <i class="fab fa-youtube"></i>
+            </a>
+            <a href="mailto:ciphercaptain@gmail.com" title="Email">
+              <i class="fas fa-envelope"></i>
+            </a>
+            <a href="https://github.com/captainxcipher" target="_blank" title="GitHub">
+              <i class="fab fa-github"></i>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </main>
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
-    </div>
+  
+  <footer class="site-footer">
+    <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
   </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
-<script>
-function copyCode(btn) {
-  const code = btn.nextElementSibling.querySelector('code');
-  navigator.clipboard.writeText(code.innerText).then(() => {
-    btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
-  });
-}
-</script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      const mobileMenu = document.querySelector('.mobile-menu');
+      
+      if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+          mobileMenu.classList.toggle('active');
+        });
+      }
+      
+      // Copy button functionality
+      const copyButtons = document.querySelectorAll('.copy-btn');
+      
+      copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const codeBlock = this.closest('.code-block');
+          const code = codeBlock.querySelector('code').innerText;
+          
+          navigator.clipboard.writeText(code).then(() => {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            
+            setTimeout(() => {
+              this.innerHTML = originalText;
+            }, 1500);
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html>
