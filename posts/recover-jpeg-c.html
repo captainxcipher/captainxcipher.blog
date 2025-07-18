@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recover JPEGs from SD Card | CS50 Problem Set 4 | Captain X Cipher</title>
+  <!-- SEO Meta Description -->
+  <meta name="description" content="Learn how to recover deleted JPEG images from an SD card in C for CS50 Problem Set 4. Step-by-step guide with code examples for forensic image recovery.">
+  <meta name="keywords" content="CS50, JPEG recovery, C programming, SD card recovery, forensic image, file recovery">
+  <meta name="author" content="Captain X Cipher">
+  
+  <!-- Preconnect to CDNs -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://www.googletagmanager.com">
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+  </noscript>
+  
+  <!-- Minified Critical CSS -->
+  <style>
+    :root{--primary:#232946;--accent:#4361ee;--light:#f7f8fa;--dark:#181c32;--text:#232946;--gray:#6c757d;--card-bg:#fff;--border:#eaeaea;--code-bg:#f8f9fa;--code-text:#343a40}*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#fff;color:var(--text);line-height:1.6;min-height:100vh;padding-bottom:2rem}.site-header{background:rgba(255,255,255,.98);backdrop-filter:blur(12px);position:sticky;top:0;z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,.08);border-bottom:1px solid rgba(0,0,0,.05)}.header-wrapper{max-width:1200px;margin:0 auto;padding:.8rem 2rem;display:flex;justify-content:space-between;align-items:center}.site-brand{font-size:1.6rem;font-weight:700;letter-spacing:.5px}.site-brand span{font-size:2.1rem;font-weight:900;color:var(--primary);letter-spacing:2px;text-shadow:0 2px 12px rgba(0,0,0,.05);font-family:Inter,'Segoe UI',Arial,sans-serif}.main-nav{display:flex;gap:1.3rem;align-items:center}.main-nav a{color:var(--primary);text-decoration:none;font-weight:500;font-size:1.09rem;transition:background .25s,color .25s,box-shadow .25s,transform .18s;padding:.34rem 1.05rem;border-radius:7px;box-shadow:0 1px 6px rgba(0,0,0,.05);background:0 0}.main-nav a.active,.main-nav a:hover{background:#f5f5f7;color:var(--primary);text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.1);font-weight:700;transform:translateY(-2px) scale(1.04)}.mobile-menu-btn{display:none;background:0 0;border:none;font-size:1.8rem;color:var(--primary);cursor:pointer;padding:.5rem}.mobile-menu{display:none;flex-direction:column;background:var(--light);padding:1rem;position:absolute;top:100%;left:0;right:0;box-shadow:0 4px 8px rgba(0,0,0,.1);z-index:1000;background:rgba(255,255,255,.98);backdrop-filter:blur(12px)}.mobile-menu.active{display:flex}.mobile-menu a{display:block;padding:1rem;color:var(--primary);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.05);font-weight:500;transition:background .3s ease}.mobile-menu a.active,.mobile-menu a:hover{background:#f5f5f7;color:var(--primary)}.blog-container{max-width:850px;margin:3rem auto;background:var(--card-bg);border-radius:12px;box-shadow:0 5px 25px rgba(0,0,0,.05);overflow:hidden;position:relative}.blog-header{background:linear-gradient(135deg,var(--primary) 0%,#1a1f3a 100%);color:#fff;padding:3.5rem 2.5rem 2.5rem;position:relative}.blog-title{font-size:2.4rem;font-weight:800;margin-bottom:.5rem;line-height:1.2}.blog-subtitle{font-size:1.2rem;font-weight:400;color:#4cc9f0;margin-bottom:1.2rem}.blog-meta{display:flex;align-items:center;gap:1.5rem;color:rgba(255,255,255,.85);font-size:.95rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.1)}.meta-item{display:flex;align-items:center;gap:.5rem}.blog-content{padding:2.5rem}.blog-section{margin-bottom:2.8rem;position:relative}.blog-section h2{color:var(--primary);font-size:1.5rem;margin-bottom:1.2rem;font-weight:700;position:relative;padding-bottom:.7rem;border-bottom:1px dashed #dee2e6}.blog-section h2 i{color:var(--accent);margin-right:.7rem}.blog-section p{color:var(--text);font-size:1.1rem;line-height:1.75;margin-bottom:1.2rem}.blog-section ul{margin:1.5rem 0;padding-left:1.8rem}.blog-section li{margin-bottom:.8rem;position:relative}.code-block{position:relative;margin:1.8rem 0;border-radius:8px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,.08);background:var(--code-bg);border:1px solid #e9ecef}pre,code{background:var(--code-bg)!important;color:var(--code-text)!important;font-family:'Fira Code','Consolas','Menlo',monospace;font-size:.95rem;padding:1.5rem;overflow-x:auto;display:block;border-radius:0;margin:0;line-height:1.5;tab-size:4}.code-header{background:#e9ecef;color:#495057;padding:.6rem 1.2rem;font-size:.9rem;font-family:'Fira Code',monospace;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #dee2e6}.copy-btn{background:#e9ecef;color:#495057;border:1px solid #dee2e6;padding:.4rem .8rem;border-radius:4px;cursor:pointer;font-size:.85rem;transition:all .2s ease;display:flex;align-items:center;gap:.4rem}.copy-btn:hover{background:#dee2e6;color:var(--primary)}.algorithm-steps{background:#f8f9fa;border-radius:8px;padding:1.5rem;margin:1.5rem 0;border-left:4px solid var(--accent)}.algorithm-steps h3{margin-bottom:1rem;color:var(--primary);display:flex;align-items:center;gap:.7rem}.blog-footer{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)}.blog-social{display:flex;justify-content:center;gap:1.8rem;margin:1.5rem 0}.blog-social a{display:flex;align-items:center;justify-content:center;width:45px;height:45px;background:var(--primary);color:#fff;border-radius:50%;font-size:1.2rem;transition:all .3s ease}.blog-social a:hover{background:var(--accent);transform:translateY(-3px)}.more-projects{text-align:center;margin:2rem 0}.more-projects a{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.8rem;background:var(--primary);color:#fff;text-decoration:none;border-radius:30px;font-weight:600;transition:all .3s ease}.more-projects a:hover{background:var(--accent);transform:translateY(-2px);box-shadow:0 5px 15px rgba(67,97,238,.3)}.site-footer{text-align:center;color:var(--gray);font-size:.95rem;padding:1.5rem;background:#232946;color:#fff;margin-top:2rem}.project-details{background:#f8f9fa;padding:1.5rem;border-radius:8px;margin:1.5rem 0;border-left:4px solid var(--accent)}.sd-card-diagram{background:#f0f4ff;padding:1.5rem;border-radius:8px;margin:1.5rem 0;border-left:4px solid var(--accent)}.sd-card-diagram h3{margin-bottom:1rem;color:var(--primary);display:flex;align-items:center;gap:.7rem}.sd-card-diagram .card-visual{display:flex;flex-direction:column;gap:10px;margin-top:1rem}.sd-card-diagram .block{padding:10px;border:1px solid #ccc;text-align:center;background:#fff;border-radius:4px;font-size:.9rem}.sd-card-diagram .block.fat{background:#e0e0ff;font-weight:700}.sd-card-diagram .block.jpg{background:#d4edda}.sd-card-diagram .block.free{background:#f8d7da}.sd-card-diagram .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px;justify-content:center}.sd-card-diagram .legend-item{display:flex;align-items:center;gap:5px;font-size:.9rem}.sd-card-diagram .legend-color{width:20px;height:20px;border-radius:3px}.function-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0}.function-card{background:#f8f9fa;border-radius:8px;padding:1.5rem;border-left:4px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .3s ease,box-shadow .3s ease}.function-card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(0,0,0,.1)}.function-card h3{margin-bottom:.8rem;color:var(--primary);display:flex;align-items:center;gap:.7rem}.function-card p{color:#555;line-height:1.6}.key-point{background:#e8f4ff;padding:15px;border-radius:8px;margin:15px 0;border-left:4px solid #4361ee}.key-point h4{display:flex;align-items:center;gap:10px;margin-bottom:10px;color:#232946}.signature-table{width:100%;border-collapse:collapse;margin:20px 0}.signature-table th{background:#4361ee;color:#fff;padding:10px;text-align:left}.signature-table td{padding:10px;border-bottom:1px solid #ddd}.signature-table tr:nth-child(even){background:#f8f9fa}@media (max-width:900px){.blog-container{margin:1.5rem}.blog-header{padding:2.5rem 1.8rem}.blog-content{padding:1.8rem}.main-nav{gap:1rem}.header-wrapper{padding:.8rem 1.5rem}}@media (max-width:768px){.main-nav{display:none}.mobile-menu-btn{display:block}.header-wrapper{padding:.8rem 1rem}}@media (max-width:600px){.blog-header{padding:2rem 1.2rem}.blog-title{font-size:2rem}.blog-content{padding:1.5rem 1.2rem}.blog-meta{flex-direction:column;align-items:flex-start;gap:.5rem}.site-brand span{font-size:1.8rem}.function-summary{grid-template-columns:1fr}}
+  </style>
+
+  <!-- Async scripts -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TSFC0RVZXZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TSFC0RVZXZ');
+  </script>
+
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-wrapper">
+      <div class="site-brand">
+        <span>Captain X Cipher</span>
+      </div>
+      
+      <!-- Accessible mobile menu -->
+      <button 
+        class="mobile-menu-btn" 
+        id="mobileMenuBtn"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="mobileMenu"
+      >
+        <i class="fas fa-bars" aria-hidden="true"></i>
+      </button>
+      
+      <nav class="main-nav" aria-label="Main Navigation">
+        <a href="../index.html">Home</a>
+        <a href="../blogs.html" class="active">Blogs</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact Us</a>
+        <a href="../privacy.html">Privacy Policy</a>
+      </nav>
+      
+      <div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Mobile menu">
+        <a href="../index.html">Home</a>
+        <a href="../blogs.html" class="active">Blogs</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact Us</a>
+        <a href="../privacy.html">Privacy Policy</a>
+      </div>
+    </div>
+  </header>
+  
+  <main>
+    <div class="blog-container">
+      <div class="blog-header">
+        <h1 class="blog-title">Recover JPEGs from SD Card</h1>
+        <div class="blog-subtitle">CS50 Problem Set 4 Implementation</div>
+        <div class="blog-meta">
+          <div class="meta-item">
+            <i class="fas fa-user" aria-hidden="true"></i>
+            <span>Captain X Cipher</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-calendar" aria-hidden="true"></i>
+            <span>July 2025</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-tag" aria-hidden="true"></i>
+            <span>CS50, C Programming, File Recovery</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="blog-content">
+        <div class="blog-section">
+          <p>
+            The Recover program is a forensic tool that recovers deleted JPEG images from a memory card. 
+            Digital cameras often format memory cards such that "deleted" photos are simply hidden from the index but remain on the card. 
+            This program scans the raw data block by block to identify JPEG signatures and reconstructs images.
+          </p>
+          
+          <div class="project-details">
+            <h3><i class="fas fa-info-circle" aria-hidden="true"></i> Project Requirements</h3>
+            <ul>
+              <li>Implement a program that recovers JPEGs from a forensic image</li>
+              <li>Accept a single command-line argument (the forensic image)</li>
+              <li>Open the memory card image file</li>
+              <li>Read the file in 512-byte blocks</li>
+              <li>Identify JPEG signatures in file headers</li>
+              <li>Create new JPEG files for each found image</li>
+              <li>Write consecutive blocks to the current JPEG file</li>
+              <li>Generate unique filenames in sequence (000.jpg, 001.jpg, etc.)</li>
+              <li>Properly close all files when finished</li>
+            </ul>
+          </div>
+          
+          <div class="sd-card-diagram">
+            <h3><i class="fas fa-sd-card" aria-hidden="true"></i> SD Card Structure</h3>
+            <p>Memory cards are structured in 512-byte blocks. JPEG files are stored contiguously with specific headers:</p>
+            
+            <div class="card-visual">
+              <div class="block fat">FAT File System</div>
+              <div class="block jpg">JPEG Header Block</div>
+              <div class="block jpg">Image Data Block</div>
+              <div class="block jpg">Image Data Block</div>
+              <div class="block free">Free Space</div>
+              <div class="block jpg">JPEG Header Block</div>
+              <div class="block jpg">Image Data Block</div>
+            </div>
+            
+            <div class="legend">
+              <div class="legend-item">
+                <div class="legend-color" style="background: #e0e0ff;"></div>
+                <span>File System Metadata</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background: #d4edda;"></div>
+                <span>JPEG File Data</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background: #f8d7da;"></div>
+                <span>Free Space/Other Data</span>
+              </div>
+            </div>
+          </div>
+        
+        <div class="function-summary">
+          <div class="function-card">
+            <h3><i class="fas fa-file-signature" aria-hidden="true"></i> found()</h3>
+            <p>Checks if a 512-byte block starts with a valid JPEG signature.</p>
+          </div>
+          
+          <div class="function-card">
+            <h3><i class="fas fa-file-medical" aria-hidden="true"></i> File Creation</h3>
+            <p>Creates new JPEG files with sequential naming (000.jpg, 001.jpg, etc.)</p>
+          </div>
+          
+          <div class="function-card">
+            <h3><i class="fas fa-save" aria-hidden="true"></i> Block Writing</h3>
+            <p>Writes 512-byte blocks to the current JPEG file until a new signature is found.</p>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-file-medical" aria-hidden="true"></i> Step 1: Opening the Memory Card</h2>
+          <p>
+            The program starts by validating command-line arguments and opening the memory card file for reading.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>recover.c</span>
+              <button class="copy-btn" aria-label="Copy code"><i class="far fa-copy" aria-hidden="true"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;stdint.h&gt;
+
+// Function prototype
+bool found(uint8_t header[]);
+
+int main(int argc, char *argv[])
+{
+    // Check for correct usage
+    if (argc != 2)
+    {
+        printf("Usage: ./recover FILE\n");
+        return 1;
+    }
+
+    // Open memory card file in binary mode
+    FILE *card = fopen(argv[1], "rb");
+    if (card == NULL)
+    {
+        printf("Card not opened\n");
+        return 2;
+    }
+    
+    // Rest of the code...</code></pre>
+          </div>
+          <div class="key-point">
+            <h4><i class="fas fa-exclamation-circle"></i> Important Note</h4>
+            <p>The file is opened in binary mode ("rb") to ensure no data transformation occurs during reading, which is critical for forensic recovery.</p>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-search" aria-hidden="true"></i> Step 2: Reading Blocks and Detecting JPEG Signatures</h2>
+          <p>
+            The program reads the memory card 512 bytes at a time and checks for the JPEG signature in each block.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>recover.c</span>
+              <button class="copy-btn" aria-label="Copy code"><i class="far fa-copy" aria-hidden="true"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Buffer for reading 512-byte blocks
+uint8_t buffer[512];
+
+// Array to store the first 4 bytes (potential JPEG header)
+uint8_t header[4];
+
+// Output file pointer
+FILE *output = NULL;
+
+// Filename buffer (8 chars for 000.jpg\0)
+char filename[8];
+int file_count = 0;
+
+// Read through the card block by block
+while (fread(buffer, 1, 512, card) == 512)
+{
+    // Extract the first 4 bytes
+    for (int i = 0; i < 4; i++)
+    {
+        header[i] = buffer[i];
+    }
+    
+    // Check if we have a JPEG signature
+    if (found(header))
+    {
+        // Handle JPEG found...
+    }
+    // Continue writing if we're in the middle of a JPEG
+    else if (output != NULL)
+    {
+        fwrite(buffer, 1, 512, output);
+    }
+}</code></pre>
+          </div>
+          
+          <div class="key-point">
+            <h4><i class="fas fa-lightbulb"></i> JPEG Signature Structure</h4>
+            <p>JPEG files start with a specific 4-byte sequence:</p>
+            <table class="signature-table">
+              <tr>
+                <th>Byte Position</th>
+                <th>Value</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td>Byte 0</td>
+                <td>0xFF</td>
+                <td>Start of JPEG marker</td>
+              </tr>
+              <tr>
+                <td>Byte 1</td>
+                <td>0xD8</td>
+                <td>JPEG file start marker</td>
+              </tr>
+              <tr>
+                <td>Byte 2</td>
+                <td>0xFF</td>
+                <td>Additional marker</td>
+              </tr>
+              <tr>
+                <td>Byte 3</td>
+                <td>0xE0-0xEF</td>
+                <td>Specific JPEG format identifier</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-file-image" aria-hidden="true"></i> Step 3: Creating JPEG Files</h2>
+          <p>
+            When a new JPEG signature is found, the program closes any open file and creates a new JPEG file.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>recover.c</span>
+              <button class="copy-btn" aria-label="Copy code"><i class="far fa-copy" aria-hidden="true"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">if (found(header) == true)
+{
+    // Close previous JPEG if open
+    if (output != NULL)
+    {
+        fclose(output);
+    }
+
+    // Create new filename (000.jpg, 001.jpg, etc.)
+    sprintf(filename, "%03i.jpg", file_count);
+    
+    // Open new JPEG file in binary write mode
+    output = fopen(filename, "wb");
+    file_count++;
+    
+    // Write the first block of the new JPEG
+    fwrite(buffer, 1, 512, output);
+}</code></pre>
+          </div>
+          <div class="key-point">
+            <h4><i class="fas fa-file-code"></i> Filename Formatting</h4>
+            <p>The <code>sprintf</code> function formats filenames with 3-digit numbers padded with zeros (e.g., 000.jpg, 001.jpg). This ensures proper sorting and meets the project requirements.</p>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-file-signature" aria-hidden="true"></i> Step 4: JPEG Signature Detection</h2>
+          <p>
+            The <code>found()</code> function checks if a byte sequence matches the JPEG signature.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>recover.c</span>
+              <button class="copy-btn" aria-label="Copy code"><i class="far fa-copy" aria-hidden="true"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">// Check if header matches JPEG signature
+bool found(uint8_t header[])
+{
+    // First 3 bytes must be 0xff, 0xd8, 0xff
+    uint8_t signature[] = {0xff, 0xd8, 0xff};
+    
+    // Fourth byte must be in this range
+    uint8_t sign2[] = {
+        0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 
+        0xe6, 0xe7, 0xe8, 0xe9, 0xea, 0xeb, 
+        0xec, 0xed, 0xee, 0xef
+    };
+
+    // Check first 3 bytes
+    for (int i = 0; i < 3; i++)
+    {
+        if (header[i] != signature[i])
+        {
+            return false;
+        }
+    }
+    
+    // Check fourth byte
+    for (int i = 0; i < 16; i++)
+    {
+        if (header[3] == sign2[i])
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-code" aria-hidden="true"></i> Full Implementation</h2>
+          <p>
+            The complete JPEG recovery implementation with all functions and main logic:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span>recover.c</span>
+              <button class="copy-btn" aria-label="Copy code"><i class="far fa-copy" aria-hidden="true"></i> Copy</button>
+            </div>
+            <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;stdint.h&gt;
+
+// Check if header matches JPEG signature
+bool found(uint8_t header[]);
+
+int main(int argc, char *argv[])
+{
+    // Validate command line arguments
+    if (argc != 2)
+    {
+        printf("Usage: ./recover FILE\n");
+        return 1;
+    }
+
+    // Open memory card file
+    FILE *card = fopen(argv[1], "rb");
+    if (card == NULL)
+    {
+        printf("Card not opened\n");
+        return 2;
+    }
+
+    // Buffer for reading 512-byte blocks
+    uint8_t buffer[512];
+    
+    // Array to store header bytes
+    uint8_t header[4];
+    
+    // Output file pointer
+    FILE *output = NULL;
+    
+    // Filename buffer
+    char filename[8];
+    int file_count = 0;
+
+    // Read through card block by block
+    while (fread(buffer, 1, 512, card) == 512)
+    {
+        // Extract first 4 bytes
+        for (int i = 0; i < 4; i++)
+        {
+            header[i] = buffer[i];
+        }
+        
+        // Check for JPEG signature
+        if (found(header))
+        {
+            // Close previous file if open
+            if (output != NULL)
+            {
+                fclose(output);
+            }
+
+            // Create new filename
+            sprintf(filename, "%03i.jpg", file_count);
+            output = fopen(filename, "wb");
+            file_count++;
+            
+            // Write the first block
+            fwrite(buffer, 1, 512, output);
+        }
+        // Continue writing if we're in a JPEG
+        else if (output != NULL)
+        {
+            fwrite(buffer, 1, 512, output);
+        }
+    }
+
+    // Close any remaining files
+    if (output != NULL)
+    {
+        fclose(output);
+    }
+    
+    // Close card file
+    fclose(card);
+    
+    return 0;
+}
+
+// Function to detect JPEG signature
+bool found(uint8_t header[])
+{
+    uint8_t signature[] = {0xff, 0xd8, 0xff};
+    uint8_t sign2[] = {
+        0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 
+        0xe6, 0xe7, 0xe8, 0xe9, 0xea, 0xeb, 
+        0xec, 0xed, 0xee, 0xef
+    };
+
+    // Check first 3 bytes
+    for (int i = 0; i < 3; i++)
+    {
+        if (header[i] != signature[i])
+        {
+            return false;
+        }
+    }
+    
+    // Check fourth byte
+    for (int i = 0; i < 16; i++)
+    {
+        if (header[3] == sign2[i])
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}</code></pre>
+          </div>
+        </div>
+        
+        <div class="blog-section">
+          <h2><i class="fas fa-lightbulb" aria-hidden="true"></i> Key Considerations</h2>
+          <ul>
+            <li><strong>Binary Mode:</strong> Files are opened in binary mode ("rb"/"wb") to prevent data corruption</li>
+            <li><strong>JPEG Signatures:</strong> The detection function checks for the specific 4-byte sequence that identifies JPEG files</li>
+            <li><strong>Block Reading:</strong> The program reads the card in 512-byte blocks, which is the standard size for storage devices</li>
+            <li><strong>File Management:</strong> Properly closing files prevents resource leaks and ensures all data is written</li>
+            <li><strong>Sequential Naming:</strong> Files are named with 3-digit numbers for proper sorting and identification</li>
+          </ul>
+          
+          <div class="project-details">
+            <h3><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Important Note</h3>
+            <p>To use this program on a physical SD card, you must first create a raw image using tools like Win32 Disk Imager. The input file should be in .raw or .img format containing the exact binary data from the memory card.</p>
+          </div>
+          
+          <div class="key-point">
+            <h4><i class="fas fa-laptop-code"></i> Example Execution</h4>
+            <p><strong>Input:</strong> <code>./recover card.raw</code></p>
+            <p><strong>Output:</strong></p>
+            <ul>
+              <li>000.jpg</li>
+              <li>001.jpg</li>
+              <li>002.jpg</li>
+              <li>...</li>
+            </ul>
+            <p><strong>Result:</strong> Recovered JPEG images from the memory card image</p>
+          </div>
+        </div>
+        
+        <div class="blog-footer">
+          <div class="more-projects">
+            <a href="../blogs.html" aria-label="Explore more CS50 projects">
+              <i class="fas fa-arrow-right" aria-hidden="true"></i>
+              Explore More CS50 Projects
+            </a>
+          </div>
+          
+          <div class="blog-social">
+            <a href="https://instagram.com/captainxcipher11" target="_blank" aria-label="Instagram">
+              <i class="fab fa-instagram" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.youtube.com/@captainxcipher" target="_blank" aria-label="YouTube">
+              <i class="fab fa-youtube" aria-hidden="true"></i>
+            </a>
+            <a href="mailto:ciphercaptain@gmail.com" aria-label="Email">
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+            </a>
+            <a href="https://github.com/captainxcipher" target="_blank" aria-label="GitHub">
+              <i class="fab fa-github" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer class="site-footer">
+    <p>&copy; 2025 Captain X Cipher. All rights reserved.</p>
+  </footer>
+  
+  <!-- Deferred JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle with ARIA
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      
+      if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', !expanded);
+          mobileMenu.classList.toggle('active');
+        });
+      }
+      
+      // Copy button functionality
+      const copyButtons = document.querySelectorAll('.copy-btn');
+      
+      copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const codeBlock = this.closest('.code-block');
+          const code = codeBlock.querySelector('code').innerText;
+          
+          navigator.clipboard.writeText(code).then(() => {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Copied!';
+            
+            setTimeout(() => {
+              this.innerHTML = originalText;
+            }, 1500);
+          });
+        });
+      });
+    });
+  </script>
+  
+  <!-- Deferred Prism.js -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+</body>
+</html>
